@@ -1,0 +1,15 @@
+<targets>
+
+  <rrlib name="getopt" libs="rrlib_logging">
+    <sources>
+      *.cpp
+    </sources>
+  </rrlib>
+
+  <testprogram name="getopt" libs="rrlib_getopt rrlib_logging">
+    <sources>
+      test/*.cpp
+    </sources>
+  </testprogram>
+
+</targets>

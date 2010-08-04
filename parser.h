@@ -31,8 +31,8 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef rrlib_getopt_parser_h_
-#define rrlib_getopt_parser_h_
+#ifndef _rrlib_getopt_parser_h_
+#define _rrlib_getopt_parser_h_
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")

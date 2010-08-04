@@ -35,8 +35,8 @@
 #error Invalid include directive. Try #include "getopt/parser.h" instead.
 #endif
 
-#ifndef rrlib_getopt_tOptionBase_h_
-#define rrlib_getopt_tOptionBase_h_
+#ifndef _rrlib_getopt_tOptionBase_h_
+#define _rrlib_getopt_tOptionBase_h_
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")

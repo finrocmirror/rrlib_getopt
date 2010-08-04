@@ -70,18 +70,18 @@ bool OptionsHandler(const rrlib::getopt::tNameToOptionMap &name_to_option_map)
 {
   if (name_to_option_map.at("port")->IsActive())
   {
-    int port = atoi(name_to_option_map.at("port")->GetValue());
+    int port = atoi(boost::any_cast<const char *>(name_to_option_map.at("port")->GetValue()));
     RRLIB_LOG_STREAM(eLL_USER) << "Port was set to " << port;
   }
 
   if (name_to_option_map.at("foo")->IsActive())
   {
-    RRLIB_LOG_STREAM(eLL_USER) << "Port was enabled (set to " << (name_to_option_map.at("foo")->GetValue() ? "true" : "false") << ")";
+    RRLIB_LOG_STREAM(eLL_USER) << "Port was enabled (set to " << boost::any_cast<bool>(name_to_option_map.at("foo")->GetValue()) << ")";
   }
 
   if (name_to_option_map.at("l")->IsActive())
   {
-    RRLIB_LOG_STREAM(eLL_USER) << "l was set to " << name_to_option_map.at("l")->GetValue();
+    RRLIB_LOG_STREAM(eLL_USER) << "l was set to " << boost::any_cast<const char *>(name_to_option_map.at("l")->GetValue());
   }
 
   if (name_to_option_map.at("r")->IsActive())
@@ -91,7 +91,7 @@ bool OptionsHandler(const rrlib::getopt::tNameToOptionMap &name_to_option_map)
 
   if (name_to_option_map.at("v")->IsActive())
   {
-    int verbosity = reinterpret_cast<int>(name_to_option_map.at("v")->GetValue());
+    int verbosity = boost::any_cast<unsigned int>(name_to_option_map.at("v")->GetValue());
     RRLIB_LOG_STREAM(eLL_USER) << "v was enabled and set to " << verbosity;
   }
 

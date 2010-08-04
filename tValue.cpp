@@ -81,7 +81,7 @@ const bool tValue::HasParameter() const
 //----------------------------------------------------------------------
 // tValue GetValue
 //----------------------------------------------------------------------
-const char *tValue::GetValue() const
+const boost::any tValue::GetValue() const
 {
   return this->value;
 }

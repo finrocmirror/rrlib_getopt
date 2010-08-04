@@ -89,7 +89,7 @@ public:
 
   virtual const bool HasParameter() const;
 
-  virtual const char *GetValue() const;
+  virtual const boost::any GetValue() const;
 
   virtual const bool SetValueFromParameter(const char *parameter);
 

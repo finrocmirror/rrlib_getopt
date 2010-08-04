@@ -73,9 +73,9 @@ tCounter::tCounter(const char *long_name, const char short_name, const char *hel
 //----------------------------------------------------------------------
 // tCounter GetValue
 //----------------------------------------------------------------------
-const char *tCounter::GetValue() const
+const boost::any tCounter::GetValue() const
 {
-  return reinterpret_cast<const char *>(this->value);
+  return this->value;
 }
 
 //----------------------------------------------------------------------

@@ -87,7 +87,7 @@ public:
     return "tCounter";
   }
 
-  virtual const char *GetValue() const;
+  virtual const boost::any GetValue() const;
 
   virtual const bool SetValueFromParameter(const char *parameter);
 

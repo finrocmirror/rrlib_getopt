@@ -72,9 +72,9 @@ tFlag::tFlag(const char *long_name, const char short_name, const char *help)
 //----------------------------------------------------------------------
 // tFlag GetValue
 //----------------------------------------------------------------------
-const char *tFlag::GetValue() const
+const boost::any tFlag::GetValue() const
 {
-  return reinterpret_cast<const char *>(this->IsActive() ? 1 : 0);
+  return this->IsActive();
 }
 
 //----------------------------------------------------------------------

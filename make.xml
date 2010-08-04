@@ -1,6 +1,6 @@
 <targets>
 
-  <rrlib name="getopt" libs="rrlib_logging">
+  <rrlib name="getopt" libs="rrlib_logging boost">
     <sources>
       *.cpp
     </sources>

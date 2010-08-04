@@ -42,6 +42,7 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <string>
+#include <boost/any.hpp>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -130,7 +131,7 @@ public:
 
   virtual const bool HasParameter() const;
 
-  virtual const char *GetValue() const = 0;
+  virtual const boost::any GetValue() const = 0;
 
   virtual const bool SetValueFromParameter(const char *parameter) = 0;
 

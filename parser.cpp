@@ -87,6 +87,9 @@ std::vector<std::pair<tFlag, tHandler> > flags;
 std::vector<std::pair<tCounter, tHandler> > counters;
 std::vector<std::pair<tValue, tHandler> > values;
 
+//----------------------------------------------------------------------
+// AddOptionToList
+//----------------------------------------------------------------------
 template <typename TOption>
 static void AddOptionToList(const TOption &option, tHandler handler, std::vector<std::pair<TOption, tHandler> > &option_list)
 {
@@ -97,6 +100,9 @@ static void AddOptionToList(const TOption &option, tHandler handler, std::vector
 
 }
 
+//----------------------------------------------------------------------
+// AddOption
+//----------------------------------------------------------------------
 void AddOption(const tFlag &option, tHandler handler)
 {
   AddOptionToList(option, handler, flags);
@@ -121,8 +127,12 @@ tShortNameToOptionMap short_name_to_option_map;
 tHandlerToNameToOptionMapMap handler_to_name_to_option_map_map;
 
 const char *program_name = 0;
+const char *program_version = "<Program version not defined>";
 const char *program_description = "<Program description not defined>";
 
+//----------------------------------------------------------------------
+// IsInMap
+//----------------------------------------------------------------------
 template <typename TMap>
 static inline const bool IsInMap(const TMap &map, const typename TMap::key_type &key)
 {
@@ -130,6 +140,9 @@ static inline const bool IsInMap(const TMap &map, const typename TMap::key_type 
   return it != map.end();
 }
 
+//----------------------------------------------------------------------
+// PrepareMaps
+//----------------------------------------------------------------------
 template <typename TOption>
 static const bool PrepareMaps(std::vector<std::pair<TOption, tHandler> > &option_list)
 {
@@ -159,6 +172,9 @@ static const bool PrepareMaps(std::vector<std::pair<TOption, tHandler> > &option
   return true;
 }
 
+//----------------------------------------------------------------------
+// PrintHelp
+//----------------------------------------------------------------------
 void PrintHelp(int return_code)
 {
   unsigned int max_long_name_length = 0;
@@ -170,6 +186,10 @@ void PrintHelp(int return_code)
 
   {
     tLogStream log = RRLIB_LOG_STREAM(eLL_USER);
+    if (return_code == EXIT_SUCCESS && program_version)
+    {
+      log << program_name << " " << program_version << std::endl << std::endl;
+    }
     if (return_code == EXIT_SUCCESS && program_description)
     {
       log << program_description << std::endl << std::endl;
@@ -188,7 +208,20 @@ void PrintHelp(int return_code)
       {
         std::string long_name = kt->second->GetLongName() ? std::string("--") + kt->second->GetLongName() + (kt->second->GetShortName() ? "," : "") : "";
         std::string short_name = kt->second->GetShortName() ? std::string("-") + kt->second->GetShortName() : "";
-        log << " " << std::left << std::setw(max_long_name_length + 5) << long_name << short_name << "    " << kt->second->GetHelp() << std::endl;
+        log << " " << std::left << std::setw(max_long_name_length + 5) << long_name << std::setw(2) << short_name << "    ";
+
+        const char *help = kt->second->GetHelp();
+        size_t help_length = strlen(help);
+        for (size_t i = 0; i < help_length; ++i)
+        {
+          if (help[i] == '\n')
+          {
+            log << std::endl << std::setw(max_long_name_length + 12) << "";
+            continue;
+          }
+          log << help[i];
+        }
+        log << std::endl;
       }
     }
   }
@@ -198,6 +231,25 @@ void PrintHelp(int return_code)
 
 }
 
+//----------------------------------------------------------------------
+// SetProgramVersion
+//----------------------------------------------------------------------
+void SetProgramVersion(const char *version)
+{
+  program_version = version;
+}
+
+//----------------------------------------------------------------------
+// SetProgramDescription
+//----------------------------------------------------------------------
+void SetProgramDescription(const char *description)
+{
+  program_description = description;
+}
+
+//----------------------------------------------------------------------
+// ProcessCommandLine
+//----------------------------------------------------------------------
 std::vector<char *> ProcessCommandLine(int argc, char **argv)
 {
   program_name = basename(argv[0]);
@@ -319,6 +371,16 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
 
   RRLIB_LOG_STREAM(eLL_DEBUG) << "Remaining command line data: " << rrlib::Join(remaining_data);
   return remaining_data;
+}
+
+//----------------------------------------------------------------------
+// ProcessCommandLine
+//----------------------------------------------------------------------
+std::vector<char *> ProcessCommandLine(int argc, char **argv, const char *version, const char *description)
+{
+  SetProgramVersion(version);
+  SetProgramDescription(description);
+  return ProcessCommandLine(argc, argv);
 }
 
 //----------------------------------------------------------------------

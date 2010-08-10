@@ -81,7 +81,14 @@ void AddOption(const tCounter &option, tHandler handler);
 
 void AddOption(const tValue &option, tHandler handler);
 
+void SetProgramVersion(const char *version);
+
+void SetProgramDescription(const char *description);
+
 std::vector<char *> ProcessCommandLine(int argc, char **argv);
+
+std::vector<char *> ProcessCommandLine(int argc, char **argv, const char *program_version, const char *program_description);
+
 
 
 //----------------------------------------------------------------------

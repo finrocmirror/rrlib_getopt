@@ -1,12 +1,12 @@
 <targets>
 
-  <rrlib name="getopt" libs="rrlib_logging boost">
+  <rrlib name="getopt" libs="boost">
     <sources>
       *.cpp
     </sources>
   </rrlib>
 
-  <testprogram name="getopt" libs="rrlib_getopt rrlib_logging">
+  <testprogram name="getopt">
     <sources>
       test/*.cpp
     </sources>

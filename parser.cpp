@@ -45,7 +45,7 @@ extern "C"
 //----------------------------------------------------------------------
 #include "logging/definitions.h"
 
-#include "getopt/join.h"
+#include "util/stl_container/join.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -260,7 +260,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
 
   // create option list
   std::vector<char *> arguments(argv + 1, argv + argc);
-  rrlib::Join(arguments, RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1));
+  rrlib::util::Join(arguments, RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1));
 
   // truncate option list
   std::vector<char *> remaining_data;
@@ -369,7 +369,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
     }
   }
 
-  RRLIB_LOG_STREAM(eLL_DEBUG) << "Remaining command line data: " << rrlib::Join(remaining_data);
+  RRLIB_LOG_STREAM(eLL_DEBUG) << "Remaining command line data: " << rrlib::util::Join(remaining_data);
   return remaining_data;
 }
 

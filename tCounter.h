@@ -38,7 +38,7 @@
 #ifndef _rrlib_getopt_tCounter_h_
 #define _rrlib_getopt_tCounter_h_
 
-#include "tOptionBase.h"
+#include "getopt/tOptionBase.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")

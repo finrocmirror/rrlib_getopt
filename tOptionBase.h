@@ -32,7 +32,7 @@
  */
 //----------------------------------------------------------------------
 #ifndef _rrlib_getopt_include_guard_
-#error Invalid include directive. Try #include "getopt/parser.h" instead.
+#error Invalid include directive. Try #include "rrlib/getopt/parser.h" instead.
 #endif
 
 #ifndef _rrlib_getopt_tOptionBase_h_
@@ -47,7 +47,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/definitions.h"
+#include "rrlib/logging/definitions.h"
 
 //----------------------------------------------------------------------
 // Debugging

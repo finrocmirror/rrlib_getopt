@@ -42,8 +42,8 @@ extern "C"
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "getopt/parser.h"
-#include "logging/definitions.h"
+#include "rrlib/getopt/parser.h"
+#include "rrlib/logging/definitions.h"
 
 //----------------------------------------------------------------------
 // Debugging

@@ -46,10 +46,10 @@
 //----------------------------------------------------------------------
 #define _rrlib_getopt_include_guard_
 
-#include "getopt/tOptionBase.h"
-#include "getopt/tFlag.h"
-#include "getopt/tCounter.h"
-#include "getopt/tValue.h"
+#include "rrlib/getopt/tOptionBase.h"
+#include "rrlib/getopt/tFlag.h"
+#include "rrlib/getopt/tCounter.h"
+#include "rrlib/getopt/tValue.h"
 
 #undef _rrlib_getopt_include_guard_
 

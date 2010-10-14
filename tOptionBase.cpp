@@ -28,7 +28,7 @@
  */
 //----------------------------------------------------------------------
 #define _rrlib_getopt_include_guard_
-#include "getopt/tOptionBase.h"
+#include "rrlib/getopt/tOptionBase.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -39,7 +39,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/definitions.h"
+#include "rrlib/logging/definitions.h"
 
 //----------------------------------------------------------------------
 // Debugging

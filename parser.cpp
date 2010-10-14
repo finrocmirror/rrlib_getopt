@@ -27,7 +27,7 @@
  *
  */
 //----------------------------------------------------------------------
-#include "getopt/parser.h"
+#include "rrlib/getopt/parser.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -43,9 +43,9 @@ extern "C"
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/definitions.h"
+#include "rrlib/logging/definitions.h"
 
-#include "util/stl_container/join.h"
+#include "rrlib/util/stl_container/join.h"
 
 //----------------------------------------------------------------------
 // Debugging

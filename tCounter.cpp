@@ -28,7 +28,7 @@
  */
 //----------------------------------------------------------------------
 #define _rrlib_getopt_include_guard_
-#include "getopt/tCounter.h"
+#include "rrlib/getopt/tCounter.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -37,7 +37,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/definitions.h"
+#include "rrlib/logging/definitions.h"
 
 //----------------------------------------------------------------------
 // Debugging

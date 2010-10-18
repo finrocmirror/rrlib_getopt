@@ -83,9 +83,22 @@ typedef std::map<tHandler, tNameToOptionMap> tHandlerToNameToOptionMapMap;
 namespace
 {
 
-std::vector<std::pair<tFlag, tHandler> > flags;
-std::vector<std::pair<tCounter, tHandler> > counters;
-std::vector<std::pair<tValue, tHandler> > values;
+
+std::vector<std::pair<tFlag, tHandler> > &GetFlags()
+{
+  static std::vector<std::pair<tFlag, tHandler> > flags;
+  return flags;
+}
+std::vector<std::pair<tCounter, tHandler> > &GetCounters()
+{
+  static std::vector<std::pair<tCounter, tHandler> > counters;
+  return counters;
+}
+std::vector<std::pair<tValue, tHandler> > &GetValues()
+{
+  static std::vector<std::pair<tValue, tHandler> > values;
+  return values;
+}
 
 //----------------------------------------------------------------------
 // AddOptionToList
@@ -105,17 +118,17 @@ static void AddOptionToList(const TOption &option, tHandler handler, std::vector
 //----------------------------------------------------------------------
 void AddOption(const tFlag &option, tHandler handler)
 {
-  AddOptionToList(option, handler, flags);
+  AddOptionToList(option, handler, GetFlags());
 }
 
 void AddOption(const tCounter &option, tHandler handler)
 {
-  AddOptionToList(option, handler, counters);
+  AddOptionToList(option, handler, GetCounters());
 }
 
 void AddOption(const tValue &option, tHandler handler)
 {
-  AddOptionToList(option, handler, values);
+  AddOptionToList(option, handler, GetValues());
 }
 
 
@@ -254,9 +267,9 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
 {
   program_name = basename(argv[0]);
 
-  PrepareMaps(flags);
-  PrepareMaps(counters);
-  PrepareMaps(values);
+  PrepareMaps(GetFlags());
+  PrepareMaps(GetCounters());
+  PrepareMaps(GetValues());
 
   // create option list
   std::vector<char *> arguments(argv + 1, argv + argc);

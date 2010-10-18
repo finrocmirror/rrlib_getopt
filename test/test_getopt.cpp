@@ -76,7 +76,7 @@ bool OptionsHandler(const rrlib::getopt::tNameToOptionMap &name_to_option_map)
 
   if (name_to_option_map.at("foo")->IsActive())
   {
-    RRLIB_LOG_STREAM(eLL_USER) << "Port was enabled (set to " << boost::any_cast<bool>(name_to_option_map.at("foo")->GetValue()) << ")";
+    RRLIB_LOG_STREAM(eLL_USER) << "Foo was enabled (set to " << boost::any_cast<bool>(name_to_option_map.at("foo")->GetValue()) << ")";
   }
 
   if (name_to_option_map.at("l")->IsActive())

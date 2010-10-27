@@ -40,6 +40,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -68,18 +69,19 @@ namespace getopt
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-typedef std::map<std::string, tOptionBase *> tNameToOptionMap;
+typedef std::tr1::shared_ptr<const tOptionBase> tOption;
+typedef std::map<std::string, tOption> tNameToOptionMap;
 typedef bool (*tHandler)(const tNameToOptionMap &name_to_option_map);
 
 //----------------------------------------------------------------------
 // Function declaration
 //----------------------------------------------------------------------
 
-void AddOption(const tFlag &option, tHandler handler);
+const tOption AddFlag(const char *long_name, const char short_name, const  char *help, tHandler handler);
 
-void AddOption(const tCounter &option, tHandler handler);
+const tOption AddCounter(const char *long_name, const char short_name, const  char *help, tHandler handler);
 
-void AddOption(const tValue &option, tHandler handler);
+const tOption AddValue(const char *long_name, const char short_name, const  char *help, tHandler handler);
 
 void SetProgramVersion(const char *version);
 

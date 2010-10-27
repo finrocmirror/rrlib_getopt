@@ -68,8 +68,8 @@ namespace getopt
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-typedef tNameToOptionMap tLongNameToOptionMap;
-typedef std::map<char, tOptionBase *> tShortNameToOptionMap;
+typedef std::map<std::string, tOption> tLongNameToOptionMap;
+typedef std::map<char, tOption> tShortNameToOptionMap;
 typedef std::map<tHandler, tNameToOptionMap> tHandlerToNameToOptionMapMap;
 
 //----------------------------------------------------------------------
@@ -83,65 +83,32 @@ typedef std::map<tHandler, tNameToOptionMap> tHandlerToNameToOptionMapMap;
 namespace
 {
 
-
-std::vector<std::pair<tFlag, tHandler> > &GetFlags()
+//----------------------------------------------------------------------
+// GetOptions
+//----------------------------------------------------------------------
+tHandlerToNameToOptionMapMap &HandlerToNameToOptionMapMap()
 {
-  static std::vector<std::pair<tFlag, tHandler> > flags;
-  return flags;
-}
-std::vector<std::pair<tCounter, tHandler> > &GetCounters()
-{
-  static std::vector<std::pair<tCounter, tHandler> > counters;
-  return counters;
-}
-std::vector<std::pair<tValue, tHandler> > &GetValues()
-{
-  static std::vector<std::pair<tValue, tHandler> > values;
-  return values;
+  static tHandlerToNameToOptionMapMap map;
+  return map;
 }
 
 //----------------------------------------------------------------------
-// AddOptionToList
+// GetLongNameToOptionMap
 //----------------------------------------------------------------------
-template <typename TOption>
-static void AddOptionToList(const TOption &option, tHandler handler, std::vector<std::pair<TOption, tHandler> > &option_list)
+tLongNameToOptionMap &LongNameToOptionMap()
 {
-  RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1) << "long_name = " << (option.GetLongName() ? option.GetLongName() : "<null>") << ", short_name = " << (option.GetShortName() ? std::string() + option.GetShortName() : "<null>") << ", help = " << (option.GetHelp() ? option.GetHelp() : "<null>");
-  assert(handler);
-  option_list.push_back(std::make_pair(option, handler));
-}
-
+  static tLongNameToOptionMap map;
+  return map;
 }
 
 //----------------------------------------------------------------------
-// AddOption
+// GetShortNameToOptionMap
 //----------------------------------------------------------------------
-void AddOption(const tFlag &option, tHandler handler)
+tShortNameToOptionMap &ShortNameToOptionMap()
 {
-  AddOptionToList(option, handler, GetFlags());
+  static tShortNameToOptionMap map;
+  return map;
 }
-
-void AddOption(const tCounter &option, tHandler handler)
-{
-  AddOptionToList(option, handler, GetCounters());
-}
-
-void AddOption(const tValue &option, tHandler handler)
-{
-  AddOptionToList(option, handler, GetValues());
-}
-
-
-namespace
-{
-
-tLongNameToOptionMap long_name_to_option_map;
-tShortNameToOptionMap short_name_to_option_map;
-tHandlerToNameToOptionMapMap handler_to_name_to_option_map_map;
-
-const char *program_name = 0;
-const char *program_version = "<Program version not defined>";
-const char *program_description = "<Program description not defined>";
 
 //----------------------------------------------------------------------
 // IsInMap
@@ -154,35 +121,58 @@ static inline const bool IsInMap(const TMap &map, const typename TMap::key_type 
 }
 
 //----------------------------------------------------------------------
-// PrepareMaps
+// AddOption
 //----------------------------------------------------------------------
-template <typename TOption>
-static const bool PrepareMaps(std::vector<std::pair<TOption, tHandler> > &option_list)
+static const tOption AddOption(const tOption &option, const tHandler handler)
 {
-  for (typename std::vector<std::pair<TOption, tHandler> >::iterator it = option_list.begin(); it != option_list.end(); ++it)
-  {
-    handler_to_name_to_option_map_map[it->second][it->first.GetName()] = &(it->first);
+  RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1) << "long_name = " << option->GetLongName() << ", short_name = " << (option->GetShortName() ? std::string() + option->GetShortName() : "<null>") << ", help = " << option->GetHelp();
+  assert(handler);
 
-    if (it->first.GetLongName())
+  if (option->GetLongName())
+  {
+    if (IsInMap(LongNameToOptionMap(), option->GetLongName()))
     {
-      if (IsInMap(long_name_to_option_map, it->first.GetLongName()))
-      {
-        RRLIB_LOG_STREAM(rrlib::logging::eLL_ERROR) << "Option '" << it->first.GetLongName() << "' already exists with description '" << long_name_to_option_map.at(it->first.GetLongName())->GetHelp() << "'";
-        return false;
-      }
-      long_name_to_option_map[it->first.GetLongName()] = &(it->first);
+      RRLIB_LOG_STREAM(rrlib::logging::eLL_ERROR) << "Option '" << option->GetLongName() << "' already exists with description '" << LongNameToOptionMap().at(option->GetLongName())->GetHelp() << "'";
+      return tOption();
     }
-    if (it->first.GetShortName())
-    {
-      if (IsInMap(short_name_to_option_map, it->first.GetShortName()))
-      {
-        RRLIB_LOG_STREAM(rrlib::logging::eLL_ERROR) << "Option '" << it->first.GetShortName() << "' already exists with description '" << short_name_to_option_map.at(it->first.GetShortName())->GetHelp() << "'";
-        return false;
-      }
-      short_name_to_option_map[it->first.GetShortName()] = &(it->first);
-    }
+    LongNameToOptionMap()[option->GetLongName()] = option;
   }
-  return true;
+  if (option->GetShortName())
+  {
+    if (IsInMap(ShortNameToOptionMap(), option->GetShortName()))
+    {
+      RRLIB_LOG_STREAM(rrlib::logging::eLL_ERROR) << "Option '" << option->GetShortName() << "' already exists with description '" << ShortNameToOptionMap().at(option->GetShortName())->GetHelp() << "'";
+      return tOption();
+    }
+    ShortNameToOptionMap()[option->GetShortName()] = option;
+  }
+
+  HandlerToNameToOptionMapMap()[handler][option->GetName()] = option;
+  return option;
+}
+
+const char *&ProgramName()
+{
+  static const char *value = 0;
+  return value;
+}
+
+const char *&ProgramVersion()
+{
+  static const char *value = "<Program version not defined>";
+  return value;
+}
+
+const char *&ProgramDescription()
+{
+  static const char *value = "<Program description not defined>";
+  return value;
+}
+
+bool &ProcessCommandLineCalled()
+{
+  static bool value = false;
+  return value;
 }
 
 //----------------------------------------------------------------------
@@ -191,37 +181,54 @@ static const bool PrepareMaps(std::vector<std::pair<TOption, tHandler> > &option
 void PrintHelp(int return_code)
 {
   unsigned int max_long_name_length = 0;
-
-  for (tLongNameToOptionMap::iterator it = long_name_to_option_map.begin(); it != long_name_to_option_map.end(); ++it)
+  for (tLongNameToOptionMap::iterator it = LongNameToOptionMap().begin(); it != LongNameToOptionMap().end(); ++it)
   {
-    max_long_name_length = std::max(max_long_name_length, it->first.length());
+    unsigned int long_name_length = it->first.length() + (it->second->HasParameter() ? 8 : 0);
+    max_long_name_length = std::max(max_long_name_length, long_name_length);
+  }
+  unsigned int max_short_name_length = 1;
+  for (tShortNameToOptionMap::iterator it = ShortNameToOptionMap().begin(); it != ShortNameToOptionMap().end(); ++it)
+  {
+    if (it->second->HasParameter())
+    {
+      max_short_name_length = 9;
+      break;
+    }
   }
 
   {
     tLogStream log = RRLIB_LOG_STREAM(eLL_USER);
-    if (return_code == EXIT_SUCCESS && program_version)
+    if (return_code == EXIT_SUCCESS && ProgramVersion())
     {
-      log << program_name << " " << program_version << std::endl << std::endl;
+      log << ProgramName() << " " << ProgramVersion() << std::endl << std::endl;
     }
-    if (return_code == EXIT_SUCCESS && program_description)
+    if (return_code == EXIT_SUCCESS && ProgramDescription())
     {
-      log << program_description << std::endl << std::endl;
+      log << ProgramDescription() << std::endl << std::endl;
     }
-    if (handler_to_name_to_option_map_map.empty())
+    if (HandlerToNameToOptionMapMap().empty())
     {
-      log << "Usage: " << program_name << std::endl;
+      log << "Usage: " << ProgramName() << std::endl;
     }
     else
     {
-      log << "Usage: " << program_name << " <OPTIONS> " << std::endl << std::endl << "Possible options are:" << std::endl;
+      log << "Usage: " << ProgramName() << " <OPTIONS> " << std::endl << std::endl << "Possible options are:" << std::endl;
     }
-    for (tHandlerToNameToOptionMapMap::iterator it = handler_to_name_to_option_map_map.begin(); it != handler_to_name_to_option_map_map.end(); ++it)
+    for (tHandlerToNameToOptionMapMap::iterator it = HandlerToNameToOptionMapMap().begin(); it != HandlerToNameToOptionMapMap().end(); ++it)
     {
       for (tNameToOptionMap::iterator kt = it->second.begin(); kt != it->second.end(); ++kt)
       {
-        std::string long_name = kt->second->GetLongName() ? std::string("--") + kt->second->GetLongName() + (kt->second->GetShortName() ? "," : "") : "";
-        std::string short_name = kt->second->GetShortName() ? std::string("-") + kt->second->GetShortName() : "";
-        log << " " << std::left << std::setw(max_long_name_length + 5) << long_name << std::setw(2) << short_name << "    ";
+        std::string long_name = "";
+        if (kt->second->GetLongName())
+        {
+          long_name += std::string("--") + kt->second->GetLongName() + (kt->second->HasParameter() ? "=<value>" : "") + (kt->second->GetShortName() ? "," : "");
+        }
+        std::string short_name = "";
+        if (kt->second->GetShortName())
+        {
+          short_name += std::string("-") + kt->second->GetShortName() + (kt->second->HasParameter() ? " <value>" : "");
+        }
+        log << " " << std::left << std::setw(max_long_name_length + 5) << long_name << std::setw(max_short_name_length + 1) << short_name << "    ";
 
         const char *help = kt->second->GetHelp();
         size_t help_length = strlen(help);
@@ -229,7 +236,7 @@ void PrintHelp(int return_code)
         {
           if (help[i] == '\n')
           {
-            log << std::endl << std::setw(max_long_name_length + 12) << "";
+            log << std::endl << std::setw(max_long_name_length + max_short_name_length + 11) << "";
             continue;
           }
           log << help[i];
@@ -244,12 +251,38 @@ void PrintHelp(int return_code)
 
 }
 
+
+
+//----------------------------------------------------------------------
+// AddFlag
+//----------------------------------------------------------------------
+const tOption AddFlag(const char *long_name, const char short_name, const  char *help, tHandler handler)
+{
+  return AddOption(tOption(new tFlag(long_name, short_name, help)), handler);
+}
+
+//----------------------------------------------------------------------
+// AddCounter
+//----------------------------------------------------------------------
+const tOption AddCounter(const char *long_name, const char short_name, const  char *help, tHandler handler)
+{
+  return AddOption(tOption(new tCounter(long_name, short_name, help)), handler);
+}
+
+//----------------------------------------------------------------------
+// AddValue
+//----------------------------------------------------------------------
+const tOption AddValue(const char *long_name, const char short_name, const  char *help, tHandler handler)
+{
+  return AddOption(tOption(new tValue(long_name, short_name, help)), handler);
+}
+
 //----------------------------------------------------------------------
 // SetProgramVersion
 //----------------------------------------------------------------------
 void SetProgramVersion(const char *version)
 {
-  program_version = version;
+  ProgramVersion() = version;
 }
 
 //----------------------------------------------------------------------
@@ -257,7 +290,7 @@ void SetProgramVersion(const char *version)
 //----------------------------------------------------------------------
 void SetProgramDescription(const char *description)
 {
-  program_description = description;
+  ProgramDescription() = description;
 }
 
 //----------------------------------------------------------------------
@@ -265,11 +298,10 @@ void SetProgramDescription(const char *description)
 //----------------------------------------------------------------------
 std::vector<char *> ProcessCommandLine(int argc, char **argv)
 {
-  program_name = basename(argv[0]);
+  assert(!ProcessCommandLineCalled() && "This method may be called only once!");
+  ProcessCommandLineCalled() = true;
 
-  PrepareMaps(GetFlags());
-  PrepareMaps(GetCounters());
-  PrepareMaps(GetValues());
+  ProgramName() = basename(argv[0]);
 
   // create option list
   std::vector<char *> arguments(argv + 1, argv + argc);
@@ -307,7 +339,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
 
       RRLIB_LOG_STREAM(eLL_DEBUG) << "Found long option: " << name;
 
-      if (!IsInMap(long_name_to_option_map, name))
+      if (!IsInMap(LongNameToOptionMap(), name))
       {
         RRLIB_LOG_STREAM(eLL_ERROR) << "Unknown long option with name '" << name << "'!";
         PrintHelp(EXIT_FAILURE);
@@ -318,7 +350,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
         RRLIB_LOG_STREAM(eLL_DEBUG) << "   with parameter: " << parameter;
       }
 
-      if (!long_name_to_option_map.at(name)->SetValueFromParameter(parameter))
+      if (!const_cast<tOptionBase *>(LongNameToOptionMap().at(name).get())->SetValueFromParameter(parameter))
       {
         exit(EXIT_FAILURE);
       }
@@ -334,7 +366,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
 
         RRLIB_LOG_STREAM(eLL_DEBUG) << "Found short option: " << name;
 
-        if (!IsInMap(short_name_to_option_map, name))
+        if (!IsInMap(ShortNameToOptionMap(), name))
         {
           RRLIB_LOG_STREAM(eLL_ERROR) << "Unknown short option with name '" << name << "'!";
           PrintHelp(EXIT_FAILURE);
@@ -342,7 +374,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
 
         if (i < strlen(*arg) - 1)
         {
-          if (short_name_to_option_map.at(name)->HasParameter())
+          if (ShortNameToOptionMap().at(name)->HasParameter())
           {
             RRLIB_LOG_STREAM(eLL_ERROR) << "Short option '" << name << "' cannot be used within option group '" << *arg + 1 << "' because it needs parameter!";
             exit(EXIT_FAILURE);
@@ -350,7 +382,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
         }
         else
         {
-          if (short_name_to_option_map.at(name)->HasParameter())
+          if (ShortNameToOptionMap().at(name)->HasParameter())
           {
             if (arg + 1 != arguments.end())
             {
@@ -361,7 +393,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
           }
         }
 
-        if (!short_name_to_option_map.at(name)->SetValueFromParameter(parameter))
+        if (!const_cast<tOptionBase *>(ShortNameToOptionMap().at(name).get())->SetValueFromParameter(parameter))
         {
           exit(EXIT_FAILURE);
         }
@@ -373,7 +405,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 
-  for (tHandlerToNameToOptionMapMap::iterator it = handler_to_name_to_option_map_map.begin(); it != handler_to_name_to_option_map_map.end(); ++it)
+  for (tHandlerToNameToOptionMapMap::iterator it = HandlerToNameToOptionMapMap().begin(); it != HandlerToNameToOptionMapMap().end(); ++it)
   {
     if (!it->first(it->second))
     {

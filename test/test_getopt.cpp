@@ -102,14 +102,14 @@ int main(int argc, char **argv)
 {
   default_log_description = basename(argv[0]);
 
-//  tLogDomainRegistry::GetInstance()->SetDomainMaxMessageLevel(".getopt", eLL_DEBUG_VERBOSE_3);
+  tLogDomainRegistry::GetInstance()->SetDomainMaxMessageLevel(".getopt", eLL_DEBUG_VERBOSE_3);
 
-  rrlib::getopt::AddOption(rrlib::getopt::tValue("port", 'p', "A litte help"), OptionsHandler);
-  rrlib::getopt::AddOption(rrlib::getopt::tFlag("foo", 'f', "from my friends"), OptionsHandler);
-  rrlib::getopt::AddOption(rrlib::getopt::tValue(0, 'l', "lalala"), OptionsHandler);
-  rrlib::getopt::AddOption(rrlib::getopt::tFlag(0, 'r', "lululu"), OptionsHandler);
-  rrlib::getopt::AddOption(rrlib::getopt::tCounter(0, 'v', "blubb"), OptionsHandler);
-  rrlib::getopt::AddOption(rrlib::getopt::tValue("long_option", 0, "Another long option with a\nreally long help text"), OptionsHandler);
+  rrlib::getopt::AddValue("port", 'p', "A litte help", OptionsHandler);
+  rrlib::getopt::AddFlag("foo", 'f', "from my friends", OptionsHandler);
+  rrlib::getopt::AddValue(0, 'l', "lalala", OptionsHandler);
+  rrlib::getopt::AddFlag(0, 'r', "lululu", OptionsHandler);
+  rrlib::getopt::AddCounter(0, 'v', "blubb", OptionsHandler);
+  rrlib::getopt::AddValue("long_option", 0, "Another long option with a\nreally long help text", OptionsHandler);
 
   rrlib::getopt::SetProgramVersion("ver. 1.0");
   rrlib::getopt::SetProgramDescription("This is a test program for the RRLib getopt implementation.");

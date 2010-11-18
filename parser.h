@@ -40,7 +40,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <memory>
+#include <tr1/memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""

@@ -85,7 +85,7 @@ class tOptionBase
 //----------------------------------------------------------------------
 protected:
 
-  inline const char *GetLogDescription()
+  inline const char *GetLogDescription() const
   {
     return this->GetDescription();
   }
@@ -99,7 +99,7 @@ protected:
 //----------------------------------------------------------------------
 public:
 
-  virtual inline const char *GetDescription()
+  virtual inline const char *GetDescription() const
   {
     return "tOptionBase";
   }

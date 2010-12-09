@@ -82,7 +82,7 @@ public:
 
   tCounter(const char *long_name, const char short_name, const char *help);
 
-  virtual inline const char *GetDescription()
+  virtual inline const char *GetDescription() const
   {
     return "tCounter";
   }

@@ -27,7 +27,7 @@
  *
  */
 //----------------------------------------------------------------------
-#define _rrlib_getopt_include_guard_
+#define __rrlib__getopt__include_guard__
 #include "rrlib/getopt/tOptionBase.h"
 
 //----------------------------------------------------------------------
@@ -36,10 +36,11 @@
 #include <string>
 #include <cstring>
 
+#include "rrlib/logging/definitions.h"
+
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/logging/definitions.h"
 
 //----------------------------------------------------------------------
 // Debugging

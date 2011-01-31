@@ -31,12 +31,12 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_getopt_include_guard_
+#ifndef __rrlib__getopt__include_guard__
 #error Invalid include directive. Try #include "rrlib/getopt/parser.h" instead.
 #endif
 
-#ifndef _rrlib_getopt_tCounter_h_
-#define _rrlib_getopt_tCounter_h_
+#ifndef __rrlib__getopt__tCounter_h__
+#define __rrlib__getopt__tCounter_h__
 
 #include "rrlib/getopt/tOptionBase.h"
 
@@ -73,7 +73,6 @@ namespace getopt
  */
 class tCounter : public tOptionBase
 {
-  unsigned int value;
 
 //----------------------------------------------------------------------
 // Public methods
@@ -90,6 +89,13 @@ public:
   virtual const boost::any GetValue() const;
 
   virtual const bool SetValueFromParameter(const char *parameter);
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
+  unsigned int value;
 
 };
 

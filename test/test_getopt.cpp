@@ -39,11 +39,12 @@ extern "C"
 #include <libgen.h>
 }
 
+#include "rrlib/logging/definitions.h"
+
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "rrlib/getopt/parser.h"
-#include "rrlib/logging/definitions.h"
 
 //----------------------------------------------------------------------
 // Debugging

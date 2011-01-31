@@ -31,12 +31,12 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_getopt_include_guard_
+#ifndef __rrlib__getopt__include_guard__
 #error Invalid include directive. Try #include "rrlib/getopt/parser.h" instead.
 #endif
 
-#ifndef _rrlib_getopt_tFlag_h_
-#define _rrlib_getopt_tFlag_h_
+#ifndef __rrlib__getopt__tFlag_h__
+#define __rrlib__getopt__tFlag_h__
 
 #include "rrlib/getopt/tOptionBase.h"
 

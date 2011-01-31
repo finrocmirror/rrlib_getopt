@@ -31,8 +31,8 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_getopt_parser_h_
-#define _rrlib_getopt_parser_h_
+#ifndef __rrlib__getopt__parser_h__
+#define __rrlib__getopt__parser_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -45,14 +45,14 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#define _rrlib_getopt_include_guard_
+#define __rrlib__getopt__include_guard__
 
 #include "rrlib/getopt/tOptionBase.h"
 #include "rrlib/getopt/tFlag.h"
 #include "rrlib/getopt/tCounter.h"
 #include "rrlib/getopt/tValue.h"
 
-#undef _rrlib_getopt_include_guard_
+#undef __rrlib__getopt__include_guard__
 
 //----------------------------------------------------------------------
 // Debugging

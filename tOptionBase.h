@@ -31,12 +31,12 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_getopt_include_guard_
+#ifndef __rrlib__getopt__include_guard__
 #error Invalid include directive. Try #include "rrlib/getopt/parser.h" instead.
 #endif
 
-#ifndef _rrlib_getopt_tOptionBase_h_
-#define _rrlib_getopt_tOptionBase_h_
+#ifndef __rrlib__getopt__tOptionBase_h__
+#define __rrlib__getopt__tOptionBase_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -44,10 +44,11 @@
 #include <string>
 #include <boost/any.hpp>
 
+#include "rrlib/logging/definitions.h"
+
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/logging/definitions.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -75,24 +76,6 @@ RRLIB_LOG_CREATE_DEFAULT_DOMAIN("getopt");
  */
 class tOptionBase
 {
-  const char *long_name;
-  char short_name;
-  const char *help;
-  bool active;
-
-//----------------------------------------------------------------------
-// Protected methods
-//----------------------------------------------------------------------
-protected:
-
-  inline const char *GetLogDescription() const
-  {
-    return this->GetDescription();
-  }
-
-  tOptionBase(const char *long_name, const char short_name, const char *help);
-
-  virtual ~tOptionBase() = 0;
 
 //----------------------------------------------------------------------
 // Public methods
@@ -134,6 +117,30 @@ public:
   virtual const boost::any GetValue() const = 0;
 
   virtual const bool SetValueFromParameter(const char *parameter) = 0;
+
+//----------------------------------------------------------------------
+// Protected methods
+//----------------------------------------------------------------------
+protected:
+
+  inline const char *GetLogDescription() const
+  {
+    return this->GetDescription();
+  }
+
+  tOptionBase(const char *long_name, const char short_name, const char *help);
+
+  virtual ~tOptionBase() = 0;
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
+  const char *long_name;
+  char short_name;
+  const char *help;
+  bool active;
 
 };
 

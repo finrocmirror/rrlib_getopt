@@ -134,7 +134,7 @@ static const tOption AddOption(const tOption &option, const tHandler handler)
   {
     if (IsInMap(LongNameToOptionMap(), option->GetLongName()))
     {
-      RRLIB_LOG_STREAM(rrlib::logging::eLL_ERROR) << "Option '" << option->GetLongName() << "' already exists with description '" << LongNameToOptionMap().at(option->GetLongName())->GetHelp() << "'";
+      RRLIB_LOG_STREAM(eLL_ERROR) << "Option '" << option->GetLongName() << "' already exists with description '" << LongNameToOptionMap().at(option->GetLongName())->GetHelp() << "'";
       return tOption();
     }
     LongNameToOptionMap()[option->GetLongName()] = option;
@@ -143,7 +143,7 @@ static const tOption AddOption(const tOption &option, const tHandler handler)
   {
     if (IsInMap(ShortNameToOptionMap(), option->GetShortName()))
     {
-      RRLIB_LOG_STREAM(rrlib::logging::eLL_ERROR) << "Option '" << option->GetShortName() << "' already exists with description '" << ShortNameToOptionMap().at(option->GetShortName())->GetHelp() << "'";
+      RRLIB_LOG_STREAM(eLL_ERROR) << "Option '" << option->GetShortName() << "' already exists with description '" << ShortNameToOptionMap().at(option->GetShortName())->GetHelp() << "'";
       return tOption();
     }
     ShortNameToOptionMap()[option->GetShortName()] = option;
@@ -307,7 +307,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
 
   // create option list
   std::vector<char *> arguments(argv + 1, argv + argc);
-  rrlib::util::Join(arguments, RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1));
+  util::Join(arguments, RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1));
 
   // truncate option list
   std::vector<char *> remaining_data;
@@ -416,7 +416,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
     }
   }
 
-  RRLIB_LOG_STREAM(eLL_DEBUG) << "Remaining command line data: " << rrlib::util::Join(remaining_data);
+  RRLIB_LOG_STREAM(eLL_DEBUG) << "Remaining command line data: " << util::Join(remaining_data);
   return remaining_data;
 }
 

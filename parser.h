@@ -40,7 +40,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <tr1/memory>
+#include <memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -69,7 +69,7 @@ namespace getopt
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-typedef std::tr1::shared_ptr<const tOptionBase> tOption;
+typedef std::shared_ptr<const tOptionBase> tOption;
 typedef std::map<std::string, tOption> tNameToOptionMap;
 typedef bool (*tHandler)(const tNameToOptionMap &name_to_option_map);
 

@@ -44,8 +44,6 @@
 #include <string>
 #include <boost/any.hpp>
 
-#include "rrlib/logging/definitions.h"
-
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
@@ -61,7 +59,6 @@ namespace rrlib
 {
 namespace getopt
 {
-RRLIB_LOG_CREATE_DEFAULT_DOMAIN("getopt");
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums

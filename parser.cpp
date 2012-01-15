@@ -41,7 +41,7 @@ extern "C"
 #include <libgen.h>
 }
 
-#include "rrlib/logging/definitions.h"
+#include "rrlib/logging/messages.h"
 
 #include "rrlib/util/join.h"
 
@@ -57,7 +57,6 @@ extern "C"
 //----------------------------------------------------------------------
 // Namespace usage
 //----------------------------------------------------------------------
-using namespace rrlib::logging;
 
 //----------------------------------------------------------------------
 // Namespace declaration
@@ -127,14 +126,14 @@ static inline const bool IsInMap(const TMap &map, const typename TMap::key_type 
 //----------------------------------------------------------------------
 static const tOption AddOption(const tOption &option, const tHandler handler)
 {
-  RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1) << "long_name = " << option->GetLongName() << ", short_name = " << (option->GetShortName() ? std::string() + option->GetShortName() : "<null>") << ", help = " << option->GetHelp();
+  RRLIB_LOG_PRINT(logging::eLL_DEBUG_VERBOSE_1, "long_name = ", option->GetLongName(), ", short_name = ", option->GetShortName(), ", help = ", option->GetHelp());
   assert(handler);
 
   if (option->GetLongName())
   {
     if (IsInMap(LongNameToOptionMap(), option->GetLongName()))
     {
-      RRLIB_LOG_STREAM(eLL_ERROR) << "Option '" << option->GetLongName() << "' already exists with description '" << LongNameToOptionMap().at(option->GetLongName())->GetHelp() << "'";
+      RRLIB_LOG_PRINT(logging::eLL_ERROR, "Option '", option->GetLongName(), "' already exists with description '", LongNameToOptionMap().at(option->GetLongName())->GetHelp(), "'");
       return tOption();
     }
     LongNameToOptionMap()[option->GetLongName()] = option;
@@ -143,7 +142,7 @@ static const tOption AddOption(const tOption &option, const tHandler handler)
   {
     if (IsInMap(ShortNameToOptionMap(), option->GetShortName()))
     {
-      RRLIB_LOG_STREAM(eLL_ERROR) << "Option '" << option->GetShortName() << "' already exists with description '" << ShortNameToOptionMap().at(option->GetShortName())->GetHelp() << "'";
+      RRLIB_LOG_PRINT(logging::eLL_ERROR, "Option '", option->GetShortName(), "' already exists with description '", ShortNameToOptionMap().at(option->GetShortName())->GetHelp(), "'");
       return tOption();
     }
     ShortNameToOptionMap()[option->GetShortName()] = option;
@@ -198,53 +197,50 @@ void PrintHelp(int return_code)
     }
   }
 
+  if (return_code == EXIT_SUCCESS && ProgramVersion())
   {
-    tLogStream log = RRLIB_LOG_STREAM(eLL_USER);
-    if (return_code == EXIT_SUCCESS && ProgramVersion())
+    RRLIB_LOG_PRINT(logging::eLL_USER, ProgramName(), " ", ProgramVersion(), "\n\n\n");
+  }
+  if (return_code == EXIT_SUCCESS && ProgramDescription())
+  {
+    RRLIB_LOG_PRINT(logging::eLL_USER, ProgramDescription(), "\n\n\n");
+  }
+  if (HandlerToNameToOptionMapMap().empty())
+  {
+    RRLIB_LOG_PRINT(logging::eLL_USER, "Usage: ", ProgramName(), "\n\n");
+  }
+  else
+  {
+    RRLIB_LOG_PRINT(logging::eLL_USER, "Usage: ", ProgramName(), " <OPTIONS> ", "\n\n", "Possible options are:\n\n");
+  }
+  for (tHandlerToNameToOptionMapMap::iterator it = HandlerToNameToOptionMapMap().begin(); it != HandlerToNameToOptionMapMap().end(); ++it)
+  {
+    for (tNameToOptionMap::iterator kt = it->second.begin(); kt != it->second.end(); ++kt)
     {
-      log << ProgramName() << " " << ProgramVersion() << std::endl << std::endl;
-    }
-    if (return_code == EXIT_SUCCESS && ProgramDescription())
-    {
-      log << ProgramDescription() << std::endl << std::endl;
-    }
-    if (HandlerToNameToOptionMapMap().empty())
-    {
-      log << "Usage: " << ProgramName() << std::endl;
-    }
-    else
-    {
-      log << "Usage: " << ProgramName() << " <OPTIONS> " << std::endl << std::endl << "Possible options are:" << std::endl;
-    }
-    for (tHandlerToNameToOptionMapMap::iterator it = HandlerToNameToOptionMapMap().begin(); it != HandlerToNameToOptionMapMap().end(); ++it)
-    {
-      for (tNameToOptionMap::iterator kt = it->second.begin(); kt != it->second.end(); ++kt)
+      std::string long_name = "";
+      if (kt->second->GetLongName())
       {
-        std::string long_name = "";
-        if (kt->second->GetLongName())
-        {
-          long_name += std::string("--") + kt->second->GetLongName() + (kt->second->HasParameter() ? "=<value>" : "") + (kt->second->GetShortName() ? "," : "");
-        }
-        std::string short_name = "";
-        if (kt->second->GetShortName())
-        {
-          short_name += std::string("-") + kt->second->GetShortName() + (kt->second->HasParameter() ? " <value>" : "");
-        }
-        log << " " << std::left << std::setw(max_long_name_length + 5) << long_name << std::setw(max_short_name_length + 1) << short_name << "    ";
-
-        const char *help = kt->second->GetHelp();
-        size_t help_length = strlen(help);
-        for (size_t i = 0; i < help_length; ++i)
-        {
-          if (help[i] == '\n')
-          {
-            log << std::endl << std::setw(max_long_name_length + max_short_name_length + 11) << "";
-            continue;
-          }
-          log << help[i];
-        }
-        log << std::endl;
+        long_name += std::string("--") + kt->second->GetLongName() + (kt->second->HasParameter() ? "=<value>" : "") + (kt->second->GetShortName() ? "," : "");
       }
+      std::string short_name = "";
+      if (kt->second->GetShortName())
+      {
+        short_name += std::string("-") + kt->second->GetShortName() + (kt->second->HasParameter() ? " <value>" : "");
+      }
+      RRLIB_LOG_PRINT(logging::eLL_USER, " ", std::left, std::setw(max_long_name_length + 5), long_name, std::setw(max_short_name_length + 1), short_name, "    ");
+
+      const char *help = kt->second->GetHelp();
+      size_t help_length = strlen(help);
+      for (size_t i = 0; i < help_length; ++i)
+      {
+        if (help[i] == '\n')
+        {
+          RRLIB_LOG_PRINT(logging::eLL_USER, "\n", std::setw(max_long_name_length + max_short_name_length + 11), "");
+          continue;
+        }
+        RRLIB_LOG_PRINT(logging::eLL_USER, help[i]);
+      }
+      RRLIB_LOG_PRINT(logging::eLL_USER, "\n");
     }
   }
 
@@ -307,7 +303,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
 
   // create option list
   std::vector<char *> arguments(argv + 1, argv + argc);
-  util::Join(arguments, RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1));
+  RRLIB_LOG_PRINT(logging::eLL_DEBUG_VERBOSE_1, util::Join(arguments));
 
   // truncate option list
   std::vector<char *> remaining_data;
@@ -328,28 +324,28 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
   // parse option list
   for (std::vector<char *>::iterator arg = arguments.begin(); arg != arguments.end(); ++arg)
   {
-    RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1) << "Looking at " << *arg;
+    RRLIB_LOG_PRINT(logging::eLL_DEBUG_VERBOSE_1, "Looking at ", *arg);
     if (strncmp(*arg, "--help", 6) == 0)
     {
       PrintHelp(EXIT_SUCCESS);
     }
     if (strncmp(*arg, "--", 2) == 0)
     {
-      RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1) << "Long option processing for '" << *arg + 2 << "'";
+      RRLIB_LOG_PRINT(logging::eLL_DEBUG_VERBOSE_1, "Long option processing for '", *arg + 2, "'");
       char *parameter = *arg + 2;
       char *name = strsep(&parameter, "=");
 
-      RRLIB_LOG_STREAM(eLL_DEBUG) << "Found long option: " << name;
+      RRLIB_LOG_PRINT(logging::eLL_DEBUG, "Found long option: ", name);
 
       if (!IsInMap(LongNameToOptionMap(), name))
       {
-        RRLIB_LOG_STREAM(eLL_ERROR) << "Unknown long option with name '" << name << "'!";
+        RRLIB_LOG_PRINT(logging::eLL_ERROR, "Unknown long option with name '", name, "'!");
         PrintHelp(EXIT_FAILURE);
       }
 
       if (parameter)
       {
-        RRLIB_LOG_STREAM(eLL_DEBUG) << "   with parameter: " << parameter;
+        RRLIB_LOG_PRINT(logging::eLL_DEBUG, "   with parameter: ", parameter);
       }
 
       if (!const_cast<tOptionBase *>(LongNameToOptionMap().at(name).get())->SetValueFromParameter(parameter))
@@ -360,17 +356,17 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
     }
     if ((*arg)[0] == '-')
     {
-      RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1) << "Short option processing for '" << *arg + 1 << "'";
+      RRLIB_LOG_PRINT(logging::eLL_DEBUG_VERBOSE_1, "Short option processing for '", *arg + 1, "'");
       for (size_t i = 1; i < strlen(*arg); ++i)
       {
         char name = (*arg)[i];
         char *parameter = 0;
 
-        RRLIB_LOG_STREAM(eLL_DEBUG) << "Found short option: " << name;
+        RRLIB_LOG_PRINT(logging::eLL_DEBUG, "Found short option: ", name);
 
         if (!IsInMap(ShortNameToOptionMap(), name))
         {
-          RRLIB_LOG_STREAM(eLL_ERROR) << "Unknown short option with name '" << name << "'!";
+          RRLIB_LOG_PRINT(logging::eLL_ERROR, "Unknown short option with name '", name, "'!");
           PrintHelp(EXIT_FAILURE);
         }
 
@@ -378,7 +374,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
         {
           if (ShortNameToOptionMap().at(name)->HasParameter())
           {
-            RRLIB_LOG_STREAM(eLL_ERROR) << "Short option '" << name << "' cannot be used within option group '" << *arg + 1 << "' because it needs parameter!";
+            RRLIB_LOG_PRINT(logging::eLL_ERROR, "Short option '", name, "' cannot be used within option group '", *arg + 1, "' because it needs parameter!");
             exit(EXIT_FAILURE);
           }
         }
@@ -390,7 +386,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
             {
               parameter = *(++arg);
               i = strlen(*arg);
-              RRLIB_LOG_STREAM(eLL_DEBUG) << "    with parameter: " << parameter;
+              RRLIB_LOG_PRINT(logging::eLL_DEBUG, "    with parameter: ", parameter);
             }
           }
         }
@@ -403,7 +399,7 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
       continue;
     }
 
-    RRLIB_LOG_STREAM(eLL_ERROR) << "Unhandled argument '" << *arg << "' while expecting an option!";
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Unhandled argument '", *arg, "' while expecting an option!");
     exit(EXIT_FAILURE);
   }
 
@@ -411,12 +407,12 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
   {
     if (!it->first(it->second))
     {
-      RRLIB_LOG_STREAM(eLL_DEBUG) << "Option processing failed!";
+      RRLIB_LOG_PRINT(logging::eLL_DEBUG, "Option processing failed!");
       exit(EXIT_FAILURE);
     }
   }
 
-  RRLIB_LOG_STREAM(eLL_DEBUG) << "Remaining command line data: " << util::Join(remaining_data);
+  RRLIB_LOG_PRINT(logging::eLL_DEBUG, "Remaining command line data: ", util::Join(remaining_data));
   return remaining_data;
 }
 

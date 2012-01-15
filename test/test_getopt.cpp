@@ -39,7 +39,8 @@ extern "C"
 #include <libgen.h>
 }
 
-#include "rrlib/logging/definitions.h"
+#include "rrlib/logging/configuration.h"
+#include "rrlib/logging/messages.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -53,7 +54,6 @@ extern "C"
 //----------------------------------------------------------------------
 // Namespace usage
 //----------------------------------------------------------------------
-using namespace rrlib::logging;
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
@@ -72,28 +72,28 @@ bool OptionsHandler(const rrlib::getopt::tNameToOptionMap &name_to_option_map)
   if (name_to_option_map.at("port")->IsActive())
   {
     int port = atoi(boost::any_cast<const char *>(name_to_option_map.at("port")->GetValue()));
-    RRLIB_LOG_STREAM(eLL_USER) << "Port was set to " << port;
+    RRLIB_LOG_PRINT(rrlib::logging::eLL_USER, "Port was set to ", port);
   }
 
   if (name_to_option_map.at("foo")->IsActive())
   {
-    RRLIB_LOG_STREAM(eLL_USER) << "Foo was enabled (set to " << boost::any_cast<bool>(name_to_option_map.at("foo")->GetValue()) << ")";
+    RRLIB_LOG_PRINT(rrlib::logging::eLL_USER, "Foo was enabled (set to ", boost::any_cast<bool>(name_to_option_map.at("foo")->GetValue()), ")");
   }
 
   if (name_to_option_map.at("l")->IsActive())
   {
-    RRLIB_LOG_STREAM(eLL_USER) << "l was set to " << boost::any_cast<const char *>(name_to_option_map.at("l")->GetValue());
+    RRLIB_LOG_PRINT(rrlib::logging::eLL_USER, "l was set to ", boost::any_cast<const char *>(name_to_option_map.at("l")->GetValue()));
   }
 
   if (name_to_option_map.at("r")->IsActive())
   {
-    RRLIB_LOG_STREAM(eLL_USER) << "r was enabled";
+    RRLIB_LOG_PRINT(rrlib::logging::eLL_USER, "r was enabled");
   }
 
   if (name_to_option_map.at("v")->IsActive())
   {
     int verbosity = boost::any_cast<unsigned int>(name_to_option_map.at("v")->GetValue());
-    RRLIB_LOG_STREAM(eLL_USER) << "v was enabled and set to " << verbosity;
+    RRLIB_LOG_PRINT(rrlib::logging::eLL_USER, "v was enabled and set to ", verbosity);
   }
 
   return true;
@@ -101,9 +101,9 @@ bool OptionsHandler(const rrlib::getopt::tNameToOptionMap &name_to_option_map)
 
 int main(int argc, char **argv)
 {
-  default_log_description = basename(argv[0]);
+  rrlib::logging::default_log_description = basename(argv[0]);
 
-  tLogDomainRegistry::GetInstance()->SetDomainMaxMessageLevel(".getopt", eLL_DEBUG_VERBOSE_3);
+  rrlib::logging::SetDomainMaxMessageLevel(".getopt", rrlib::logging::eLL_DEBUG_VERBOSE_3);
 
   rrlib::getopt::AddValue("port", 'p', "A litte help", &OptionsHandler);
   rrlib::getopt::AddFlag("foo", 'f', "from my friends", &OptionsHandler);

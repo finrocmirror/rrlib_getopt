@@ -33,7 +33,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include "rrlib/logging/definitions.h"
+#include "rrlib/logging/messages.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -47,8 +47,14 @@
 //----------------------------------------------------------------------
 // Namespace usage
 //----------------------------------------------------------------------
-using namespace rrlib::getopt;
-using namespace rrlib::logging;
+
+//----------------------------------------------------------------------
+// Namespace declaration
+//----------------------------------------------------------------------
+namespace rrlib
+{
+namespace getopt
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
@@ -85,9 +91,15 @@ const bool tCounter::SetValueFromParameter(const char *parameter)
 {
   if (parameter)
   {
-    RRLIB_LOG_STREAM(eLL_ERROR) << "Illegal value for counter option '" << this->GetName() << "': " << parameter << "!";
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Illegal value for counter option '", this->GetName(), "': ", parameter, "!");
     return false;
   }
   this->value++;
   return tOptionBase::SetValueFromParameter(parameter);
+}
+
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
+}
 }

@@ -36,7 +36,7 @@
 #include <string>
 #include <cstring>
 
-#include "rrlib/logging/definitions.h"
+#include "rrlib/logging/messages.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -50,8 +50,14 @@
 //----------------------------------------------------------------------
 // Namespace usage
 //----------------------------------------------------------------------
-using namespace rrlib::getopt;
-using namespace rrlib::logging;
+
+//----------------------------------------------------------------------
+// Namespace declaration
+//----------------------------------------------------------------------
+namespace rrlib
+{
+namespace getopt
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
@@ -74,7 +80,7 @@ tOptionBase::tOptionBase(const char *long_name, const char short_name, const cha
     help(help),
     active(false)
 {
-  RRLIB_LOG_STREAM(eLL_DEBUG_VERBOSE_1) << "long_name = " << (long_name ? long_name : "<null>") << ", short_name = " << (short_name ? std::string() + short_name : "<null>") << ", help = " << (help ? help : "<null>");
+  RRLIB_LOG_PRINT(logging::eLL_DEBUG_VERBOSE_1, "long_name = ", long_name, ", short_name = ", short_name, ", help = ", help);
   assert((long_name || short_name) && "Specify at least a long or a short name for each option!");
   assert((!long_name || strlen(long_name)) && "long_name may not be an empty string!");
   assert((!short_name || (('A' <= short_name && short_name <= 'Z') || ('a' <= short_name && short_name <= 'z'))) && "Not a valid character for short_name!");
@@ -102,4 +108,10 @@ const bool tOptionBase::SetValueFromParameter(const char *)
 {
   this->active = true;
   return true;
+}
+
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
+}
 }

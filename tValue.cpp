@@ -33,7 +33,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include "rrlib/logging/definitions.h"
+#include "rrlib/logging/messages.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -47,8 +47,14 @@
 //----------------------------------------------------------------------
 // Namespace usage
 //----------------------------------------------------------------------
-using namespace rrlib::getopt;
-using namespace rrlib::logging;
+
+//----------------------------------------------------------------------
+// Namespace declaration
+//----------------------------------------------------------------------
+namespace rrlib
+{
+namespace getopt
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
@@ -93,14 +99,20 @@ const bool tValue::SetValueFromParameter(const char *parameter)
 {
   if (this->IsActive())
   {
-    RRLIB_LOG_STREAM(eLL_ERROR) << "Double occurrence of option '" << this->GetName() << "'!";
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Double occurrence of option '", this->GetName(), "'!");
     return false;
   }
   if (!parameter)
   {
-    RRLIB_LOG_STREAM(eLL_ERROR) << "Missing value for option '" << this->GetName() << "'!";
+    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Missing value for option '", this->GetName(), "'!");
     return false;
   }
   this->value = parameter;
   return tOptionBase::SetValueFromParameter(parameter);
+}
+
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
+}
 }

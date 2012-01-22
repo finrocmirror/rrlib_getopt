@@ -72,7 +72,7 @@ namespace getopt
 // tFlag constructors
 //----------------------------------------------------------------------
 tFlag::tFlag(const char *long_name, const char short_name, const char *help)
-    : tOptionBase(long_name, short_name, help)
+  : tOptionBase(long_name, short_name, help)
 {}
 
 //----------------------------------------------------------------------

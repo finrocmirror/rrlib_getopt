@@ -75,7 +75,7 @@ namespace getopt
 // tOptionBase constructors
 //----------------------------------------------------------------------
 tOptionBase::tOptionBase(const char *long_name, const char short_name, const char *help)
-    : long_name(long_name),
+  : long_name(long_name),
     short_name(short_name),
     help(help),
     active(false)

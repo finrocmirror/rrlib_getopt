@@ -199,11 +199,11 @@ void PrintHelp(int return_code)
 
   if (return_code == EXIT_SUCCESS && ProgramVersion())
   {
-    RRLIB_LOG_PRINT(logging::eLL_USER, ProgramName(), " ", ProgramVersion(), "\n\n\n");
+    RRLIB_LOG_PRINT(logging::eLL_USER, ProgramName(), " ", ProgramVersion(), "\n\n");
   }
   if (return_code == EXIT_SUCCESS && ProgramDescription())
   {
-    RRLIB_LOG_PRINT(logging::eLL_USER, ProgramDescription(), "\n\n\n");
+    RRLIB_LOG_PRINT(logging::eLL_USER, ProgramDescription(), "\n\n");
   }
   if (HandlerToNameToOptionMapMap().empty())
   {
@@ -227,7 +227,8 @@ void PrintHelp(int return_code)
       {
         short_name += std::string("-") + kt->second->GetShortName() + (kt->second->HasParameter() ? " <value>" : "");
       }
-      RRLIB_LOG_PRINT(logging::eLL_USER, " ", std::left, std::setw(max_long_name_length + 5), long_name, std::setw(max_short_name_length + 1), short_name, "    ");
+      std::stringstream option_line;
+      option_line << " " << std::left << std::setw(max_long_name_length + 5) << long_name << std::setw(max_short_name_length + 1) << short_name << "    ";
 
       const char *help = kt->second->GetHelp();
       size_t help_length = strlen(help);
@@ -235,12 +236,12 @@ void PrintHelp(int return_code)
       {
         if (help[i] == '\n')
         {
-          RRLIB_LOG_PRINT(logging::eLL_USER, "\n", std::setw(max_long_name_length + max_short_name_length + 11), "");
+          option_line << "\n" << std::setw(max_long_name_length + max_short_name_length + 11) << "";
           continue;
         }
-        RRLIB_LOG_PRINT(logging::eLL_USER, help[i]);
+        option_line << help[i];
       }
-      RRLIB_LOG_PRINT(logging::eLL_USER, "\n");
+      RRLIB_LOG_PRINT(logging::eLL_USER, option_line.str());
     }
   }
 

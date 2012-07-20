@@ -99,12 +99,12 @@ const bool tValue::SetValueFromParameter(const char *parameter)
 {
   if (this->IsActive())
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Double occurrence of option '", this->GetName(), "'!");
+    RRLIB_LOG_PRINT(ERROR, "Double occurrence of option '", this->GetName(), "'!");
     return false;
   }
   if (!parameter)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Missing value for option '", this->GetName(), "'!");
+    RRLIB_LOG_PRINT(ERROR, "Missing value for option '", this->GetName(), "'!");
     return false;
   }
   this->value = parameter;

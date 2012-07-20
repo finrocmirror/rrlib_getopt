@@ -90,12 +90,12 @@ const bool tFlag::SetValueFromParameter(const char *parameter)
 {
   if (this->IsActive())
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Double occurrence of flag option '", this->GetName(), "': ", parameter, "!");
+    RRLIB_LOG_PRINT(ERROR, "Double occurrence of flag option '", this->GetName(), "': ", parameter, "!");
     return false;
   }
   if (parameter)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Illegal value for flag option '", this->GetName(), "': ", parameter, "!");
+    RRLIB_LOG_PRINT(ERROR, "Illegal value for flag option '", this->GetName(), "': ", parameter, "!");
     return false;
   }
   return tOptionBase::SetValueFromParameter(parameter);

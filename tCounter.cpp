@@ -91,7 +91,7 @@ const bool tCounter::SetValueFromParameter(const char *parameter)
 {
   if (parameter)
   {
-    RRLIB_LOG_PRINT(logging::eLL_ERROR, "Illegal value for counter option '", this->GetName(), "': ", parameter, "!");
+    RRLIB_LOG_PRINT(ERROR, "Illegal value for counter option '", this->GetName(), "': ", parameter, "!");
     return false;
   }
   this->value++;

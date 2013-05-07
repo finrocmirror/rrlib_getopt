@@ -19,13 +19,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tCounter.h
+/*!\file    rrlib/getopt/tCounter.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-07-31
  *
- * \brief Contains tCounter
+ * \brief   Contains tCounter
  *
  * \b tCounter
  *

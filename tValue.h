@@ -19,13 +19,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tValue.h
+/*!\file    rrlib/getopt/tValue.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-07-31
  *
- * \brief Contains tValue
+ * \brief   Contains tValue
  *
  * \b tValue
  *

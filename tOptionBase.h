@@ -19,13 +19,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tOptionBase.h
+/*!\file    rrlib/getopt/tOptionBase.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-07-31
  *
- * \brief Contains tOptionBase
+ * \brief   Contains tOptionBase
  *
  * \b tOptionBase
  *

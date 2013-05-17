@@ -94,17 +94,17 @@ tOptionBase::~tOptionBase()
 {}
 
 //----------------------------------------------------------------------
-// tOptionBase HasParameter
+// tOptionBase ExpectsValue
 //----------------------------------------------------------------------
-const bool tOptionBase::HasParameter() const
+bool tOptionBase::ExpectsValue() const
 {
   return false;
 }
 
 //----------------------------------------------------------------------
-// tOptionBase SetValueFromParameter
+// tOptionBase SetValueFromString
 //----------------------------------------------------------------------
-const bool tOptionBase::SetValueFromParameter(const char *)
+bool tOptionBase::SetValueFromString(const std::string &)
 {
   this->active = true;
   return true;

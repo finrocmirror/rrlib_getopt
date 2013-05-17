@@ -77,25 +77,30 @@ tCounter::tCounter(const char *long_name, const char short_name, const char *hel
 {}
 
 //----------------------------------------------------------------------
-// tCounter GetValue
+// tCounter SetValueFromString
 //----------------------------------------------------------------------
-const boost::any tCounter::GetValue() const
+bool tCounter::SetValueFromString(const std::string &value)
 {
-  return this->value;
-}
-
-//----------------------------------------------------------------------
-// tCounter SetValueFromParameter
-//----------------------------------------------------------------------
-const bool tCounter::SetValueFromParameter(const char *parameter)
-{
-  if (parameter)
+  if (!value.empty())
   {
-    RRLIB_LOG_PRINT(ERROR, "Illegal value for counter option '", this->GetName(), "': ", parameter, "!");
+    RRLIB_LOG_PRINT(ERROR, "Illegal value for counter option '", this->GetName(), "': ", value, "!");
     return false;
   }
   this->value++;
-  return tOptionBase::SetValueFromParameter(parameter);
+  return tOptionBase::SetValueFromString(value);
+}
+
+//----------------------------------------------------------------------
+// EvaluateCounter
+//----------------------------------------------------------------------
+unsigned int EvaluateCounter(const std::shared_ptr<const tOptionBase> option)
+{
+  const tCounter *counter = dynamic_cast<const tCounter *>(option.get());
+  if (!counter)
+  {
+    throw std::logic_error("Trying to treat an option as counter which was not created as such!");
+  }
+  return counter->value;
 }
 
 //----------------------------------------------------------------------

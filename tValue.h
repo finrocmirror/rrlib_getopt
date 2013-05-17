@@ -43,6 +43,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include <memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -73,6 +74,7 @@ namespace getopt
  */
 class tValue : public tOptionBase
 {
+  friend const std::string &EvaluateValue(const std::shared_ptr<const tOptionBase> option);
 
 //----------------------------------------------------------------------
 // Public methods
@@ -86,20 +88,20 @@ public:
     return "tValue";
   }
 
-  virtual const bool HasParameter() const;
+  virtual bool ExpectsValue() const;
 
-  virtual const boost::any GetValue() const;
-
-  virtual const bool SetValueFromParameter(const char *parameter);
+  virtual bool SetValueFromString(const std::string &value);
 
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
 private:
 
-  const char *value;
+  std::string value;
 
 };
+
+const std::string &EvaluateValue(const std::shared_ptr<const tOptionBase> option);
 
 //----------------------------------------------------------------------
 // End of namespace declaration

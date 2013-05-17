@@ -158,18 +158,6 @@ const char *&ProgramName()
   return value;
 }
 
-const char *&ProgramVersion()
-{
-  static const char *value = "<Program version not defined>";
-  return value;
-}
-
-const char *&ProgramDescription()
-{
-  static const char *value = "<Program description not defined>";
-  return value;
-}
-
 bool &ProcessCommandLineCalled()
 {
   static bool value = false;
@@ -179,56 +167,73 @@ bool &ProcessCommandLineCalled()
 //----------------------------------------------------------------------
 // PrintHelp
 //----------------------------------------------------------------------
-void PrintHelp(int return_code)
+void PrintHelp(const std::string &program_description, const std::string &command_line_arguments, const std::string &additional_help_text)
 {
-  unsigned int max_long_name_length = 0;
-  for (tLongNameToOptionMap::iterator it = LongNameToOptionMap().begin(); it != LongNameToOptionMap().end(); ++it)
+  unsigned int padding = 0;
+  for (tHandlerToNameToOptionMapMap::iterator it = HandlerToNameToOptionMapMap().begin(); it != HandlerToNameToOptionMapMap().end(); ++it)
   {
-    unsigned int long_name_length = it->first.length() + (it->second->HasParameter() ? 8 : 0);
-    max_long_name_length = std::max(max_long_name_length, long_name_length);
-  }
-  unsigned int max_short_name_length = 1;
-  for (tShortNameToOptionMap::iterator it = ShortNameToOptionMap().begin(); it != ShortNameToOptionMap().end(); ++it)
-  {
-    if (it->second->HasParameter())
+    for (tNameToOptionMap::iterator kt = it->second.begin(); kt != it->second.end(); ++kt)
     {
-      max_short_name_length = 9;
-      break;
+      unsigned int candidate = 0;
+      if (kt->second->GetShortName())
+      {
+        candidate += 2 + (kt->second->ExpectsValue() ? 8 : 0);
+        if (kt->second->GetLongName())
+        {
+          candidate += 2;
+        }
+      }
+      if (kt->second->GetLongName())
+      {
+        candidate += 2 + strlen(kt->second->GetLongName()) + (kt->second->ExpectsValue() ? 8 : 0);
+      }
+      padding = std::max(padding, candidate);
     }
   }
+  padding += 5;
 
-  if (return_code == EXIT_SUCCESS && ProgramVersion())
+  if (!program_description.empty())
   {
-    RRLIB_LOG_PRINT(USER, ProgramName(), " ", ProgramVersion(), "\n\n");
+    RRLIB_LOG_PRINT(USER, program_description, "\n\n");
   }
-  if (return_code == EXIT_SUCCESS && ProgramDescription())
+
+  std::stringstream output;
+  output << "usage: " << ProgramName();
+  if (!HandlerToNameToOptionMapMap().empty())
   {
-    RRLIB_LOG_PRINT(USER, ProgramDescription(), "\n\n");
+    output << " [options]";
   }
-  if (HandlerToNameToOptionMapMap().empty())
+  if (!command_line_arguments.empty())
   {
-    RRLIB_LOG_PRINT(USER, "Usage: ", ProgramName(), "\n\n");
+    output << " " << command_line_arguments;
   }
-  else
+  RRLIB_LOG_PRINT(USER, output.str());
+  if (!HandlerToNameToOptionMapMap().empty())
   {
-    RRLIB_LOG_PRINT(USER, "Usage: ", ProgramName(), " <OPTIONS> ", "\n\n", "Possible options are:\n\n");
+    RRLIB_LOG_PRINT(USER, "options:");
   }
   for (tHandlerToNameToOptionMapMap::iterator it = HandlerToNameToOptionMapMap().begin(); it != HandlerToNameToOptionMapMap().end(); ++it)
   {
     for (tNameToOptionMap::iterator kt = it->second.begin(); kt != it->second.end(); ++kt)
     {
-      std::string long_name = "";
-      if (kt->second->GetLongName())
-      {
-        long_name += std::string("--") + kt->second->GetLongName() + (kt->second->HasParameter() ? "=<value>" : "") + (kt->second->GetShortName() ? "," : "");
-      }
-      std::string short_name = "";
+      std::stringstream option;
+
+      option << "  ";
       if (kt->second->GetShortName())
       {
-        short_name += std::string("-") + kt->second->GetShortName() + (kt->second->HasParameter() ? " <value>" : "");
+        option << "-" << kt->second->GetShortName() << (kt->second->ExpectsValue() ? " <value>" : "");
+        if (kt->second->GetLongName())
+        {
+          option << ", ";
+        }
       }
+      if (kt->second->GetLongName())
+      {
+        option << "--" << kt->second->GetLongName() << (kt->second->ExpectsValue() ? "=<value>" : "");
+      }
+
       std::stringstream option_line;
-      option_line << " " << std::left << std::setw(max_long_name_length + 5) << long_name << std::setw(max_short_name_length + 1) << short_name << "    ";
+      option_line << std::left << std::setw(padding) << option.str();
 
       const char *help = kt->second->GetHelp();
       size_t help_length = strlen(help);
@@ -236,7 +241,7 @@ void PrintHelp(int return_code)
       {
         if (help[i] == '\n')
         {
-          option_line << "\n" << std::setw(max_long_name_length + max_short_name_length + 11) << "";
+          option_line << std::endl << std::setw(padding) << "";
           continue;
         }
         option_line << help[i];
@@ -244,8 +249,37 @@ void PrintHelp(int return_code)
       RRLIB_LOG_PRINT(USER, option_line.str());
     }
   }
+  if (!additional_help_text.empty())
+  {
+    RRLIB_LOG_PRINT(USER, "\n", additional_help_text);
+  }
+}
 
-  exit(return_code);
+//----------------------------------------------------------------------
+// ProcessOption
+//----------------------------------------------------------------------
+size_t ProcessOption(const tOptionBase &option, std::string &value, size_t argc, char **argv, size_t i)
+{
+  if (option.ExpectsValue() && value.empty())
+  {
+    i++;
+    if (i < argc && std::string(argv[i]) != "--")
+    {
+      value = argv[i];
+    }
+  }
+
+  if (!value.empty())
+  {
+    RRLIB_LOG_PRINT(DEBUG, "   with value: ", value);
+  }
+
+  if (!const_cast<tOptionBase &>(option).SetValueFromString(value))
+  {
+    exit(EXIT_FAILURE);
+  }
+
+  return i;
 }
 
 }
@@ -277,131 +311,89 @@ const tOption AddValue(const char *long_name, const char short_name, const  char
 }
 
 //----------------------------------------------------------------------
-// SetProgramVersion
-//----------------------------------------------------------------------
-void SetProgramVersion(const char *version)
-{
-  ProgramVersion() = version;
-}
-
-//----------------------------------------------------------------------
-// SetProgramDescription
-//----------------------------------------------------------------------
-void SetProgramDescription(const char *description)
-{
-  ProgramDescription() = description;
-}
-
-//----------------------------------------------------------------------
 // ProcessCommandLine
 //----------------------------------------------------------------------
-std::vector<char *> ProcessCommandLine(int argc, char **argv)
+std::vector<std::string> ProcessCommandLine(size_t argc, char **argv,
+    const std::string &program_description, const std::string &command_line_arguments, const std::string &additional_help_text)
 {
   assert(!ProcessCommandLineCalled() && "This method may be called only once!");
   ProcessCommandLineCalled() = true;
 
   ProgramName() = basename(argv[0]);
 
-  // create option list
-  std::vector<char *> arguments(argv + 1, argv + argc);
-  RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, util::Join(arguments));
+  RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, util::Join(argv + 1, argv + argc));
 
-  // truncate option list
-  std::vector<char *> remaining_data;
-  std::vector<char *>::iterator end_marker;
-  for (end_marker = arguments.begin(); end_marker != arguments.end(); ++end_marker)
+  std::vector<std::string> remaining_arguments;
+  for (size_t i = 1; i < argc; ++i)
   {
-    if (std::string(*end_marker) == "--")
+    RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Looking at ", argv[i]);
+    if (std::string(argv[i]) == "--")
     {
+      while (++i < argc)
+      {
+        remaining_arguments.push_back(argv[i]);
+      }
       break;
     }
-  }
-  if (end_marker != arguments.end())
-  {
-    remaining_data.assign(end_marker + 1, arguments.end());
-    arguments.erase(end_marker, arguments.end());
-  }
 
-  // parse option list
-  for (std::vector<char *>::iterator arg = arguments.begin(); arg != arguments.end(); ++arg)
-  {
-    RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Looking at ", *arg);
-    if (strncmp(*arg, "--help", 6) == 0)
+    if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h")
     {
-      PrintHelp(EXIT_SUCCESS);
+      PrintHelp(program_description, command_line_arguments, additional_help_text);
+      exit(EXIT_SUCCESS);
     }
-    if (strncmp(*arg, "--", 2) == 0)
+
+    if (strncmp(argv[i], "--", 2) == 0)
     {
-      RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Long option processing for '", *arg + 2, "'");
-      char *parameter = *arg + 2;
-      char *name = strsep(&parameter, "=");
+      RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Long option processing for '", argv[i] + 2, "'");
+      size_t name_length = 2;
+      while (name_length < strlen(argv[i]) && argv[i][name_length] != '=')
+      {
+        name_length++;
+      }
+      std::string name(argv[i] + 2, name_length - 2);
+      name_length = std::min(name_length + 1, strlen(argv[i]));
+      std::string value(argv[i] + name_length);
 
       RRLIB_LOG_PRINT(DEBUG, "Found long option: ", name);
 
       if (!IsInMap(LongNameToOptionMap(), name))
       {
         RRLIB_LOG_PRINT(ERROR, "Unknown long option with name '", name, "'!");
-        PrintHelp(EXIT_FAILURE);
-      }
-
-      if (parameter)
-      {
-        RRLIB_LOG_PRINT(DEBUG, "   with parameter: ", parameter);
-      }
-
-      if (!const_cast<tOptionBase *>(LongNameToOptionMap().at(name).get())->SetValueFromParameter(parameter))
-      {
         exit(EXIT_FAILURE);
       }
+
+      i = ProcessOption(*LongNameToOptionMap().at(name), value, argc, argv, i);
       continue;
     }
-    if ((*arg)[0] == '-')
+
+    if (argv[i][0] == '-')
     {
-      RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Short option processing for '", *arg + 1, "'");
-      for (size_t i = 1; i < strlen(*arg); ++i)
+      RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Short option processing for '", argv[i] + 1, "'");
+      for (size_t k = 1; k < strlen(argv[i]); ++k)
       {
-        char name = (*arg)[i];
-        char *parameter = 0;
+        char name = argv[i][k];
+        std::string value;
 
         RRLIB_LOG_PRINT(DEBUG, "Found short option: ", name);
 
         if (!IsInMap(ShortNameToOptionMap(), name))
         {
           RRLIB_LOG_PRINT(ERROR, "Unknown short option with name '", name, "'!");
-          PrintHelp(EXIT_FAILURE);
-        }
-
-        if (i < strlen(*arg) - 1)
-        {
-          if (ShortNameToOptionMap().at(name)->HasParameter())
-          {
-            RRLIB_LOG_PRINT(ERROR, "Short option '", name, "' cannot be used within option group '", *arg + 1, "' because it needs parameter!");
-            exit(EXIT_FAILURE);
-          }
-        }
-        else
-        {
-          if (ShortNameToOptionMap().at(name)->HasParameter())
-          {
-            if (arg + 1 != arguments.end())
-            {
-              parameter = *(++arg);
-              i = strlen(*arg);
-              RRLIB_LOG_PRINT(DEBUG, "    with parameter: ", parameter);
-            }
-          }
-        }
-
-        if (!const_cast<tOptionBase *>(ShortNameToOptionMap().at(name).get())->SetValueFromParameter(parameter))
-        {
           exit(EXIT_FAILURE);
         }
+
+        const tOptionBase &option = *ShortNameToOptionMap().at(name);
+        if (option.ExpectsValue() && k < strlen(argv[i] - 1))
+        {
+          RRLIB_LOG_PRINT(ERROR, "Short option '", name, "' cannot be used within option group '", argv[i] + 1, "' because it expects a value!");
+          exit(EXIT_FAILURE);
+        }
+
+        i = ProcessOption(option, value, argc, argv, i);
       }
       continue;
     }
-
-    RRLIB_LOG_PRINT(ERROR, "Unhandled argument '", *arg, "' while expecting an option!");
-    exit(EXIT_FAILURE);
+    remaining_arguments.push_back(argv[i]);
   }
 
   for (tHandlerToNameToOptionMapMap::iterator it = HandlerToNameToOptionMapMap().begin(); it != HandlerToNameToOptionMapMap().end(); ++it)
@@ -413,18 +405,8 @@ std::vector<char *> ProcessCommandLine(int argc, char **argv)
     }
   }
 
-  RRLIB_LOG_PRINT(DEBUG, "Remaining command line data: ", util::Join(remaining_data));
-  return remaining_data;
-}
-
-//----------------------------------------------------------------------
-// ProcessCommandLine
-//----------------------------------------------------------------------
-std::vector<char *> ProcessCommandLine(int argc, char **argv, const char *version, const char *description)
-{
-  SetProgramVersion(version);
-  SetProgramDescription(description);
-  return ProcessCommandLine(argc, argv);
+  RRLIB_LOG_PRINT(DEBUG, "Remaining command line arguments: ", util::Join(remaining_arguments));
+  return remaining_arguments;
 }
 
 //----------------------------------------------------------------------

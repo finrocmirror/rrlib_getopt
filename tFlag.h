@@ -43,6 +43,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include <memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -86,11 +87,11 @@ public:
     return "tFlag";
   }
 
-  virtual const boost::any GetValue() const;
-
-  virtual const bool SetValueFromParameter(const char *parameter);
+  virtual bool SetValueFromString(const std::string &value);
 
 };
+
+bool EvaluateFlag(const std::shared_ptr<const tOptionBase> option);
 
 //----------------------------------------------------------------------
 // End of namespace declaration

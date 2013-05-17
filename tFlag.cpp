@@ -76,29 +76,34 @@ tFlag::tFlag(const char *long_name, const char short_name, const char *help)
 {}
 
 //----------------------------------------------------------------------
-// tFlag GetValue
+// tFlag SetValueFromString
 //----------------------------------------------------------------------
-const boost::any tFlag::GetValue() const
-{
-  return this->IsActive();
-}
-
-//----------------------------------------------------------------------
-// tFlag SetValueFromParameter
-//----------------------------------------------------------------------
-const bool tFlag::SetValueFromParameter(const char *parameter)
+bool tFlag::SetValueFromString(const std::string &value)
 {
   if (this->IsActive())
   {
-    RRLIB_LOG_PRINT(ERROR, "Double occurrence of flag option '", this->GetName(), "': ", parameter, "!");
+    RRLIB_LOG_PRINT(ERROR, "Double occurrence of flag option '", this->GetName(), "!");
     return false;
   }
-  if (parameter)
+  if (!value.empty())
   {
-    RRLIB_LOG_PRINT(ERROR, "Illegal value for flag option '", this->GetName(), "': ", parameter, "!");
+    RRLIB_LOG_PRINT(ERROR, "Illegal value for flag option '", this->GetName(), "': ", value, "!");
     return false;
   }
-  return tOptionBase::SetValueFromParameter(parameter);
+  return tOptionBase::SetValueFromString(value);
+}
+
+//----------------------------------------------------------------------
+// EvaluateFlag
+//----------------------------------------------------------------------
+bool EvaluateFlag(const std::shared_ptr<const tOptionBase> option)
+{
+  const tFlag *flag = dynamic_cast<const tFlag *>(option.get());
+  if (!flag)
+  {
+    throw std::logic_error("Trying to treat an option as flag which was not created as such!");
+  }
+  return flag->IsActive();
 }
 
 //----------------------------------------------------------------------

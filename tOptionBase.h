@@ -42,7 +42,6 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <string>
-#include <boost/any.hpp>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -84,7 +83,7 @@ public:
     return "tOptionBase";
   }
 
-  inline const std::string GetName() const
+  inline std::string GetName() const
   {
     return this->long_name ? this->long_name : std::string() + this->short_name;
   }
@@ -94,7 +93,7 @@ public:
     return this->long_name;
   }
 
-  inline const char GetShortName() const
+  inline char GetShortName() const
   {
     return this->short_name;
   }
@@ -109,11 +108,9 @@ public:
     return this->active;
   }
 
-  virtual const bool HasParameter() const;
+  virtual bool ExpectsValue() const;
 
-  virtual const boost::any GetValue() const = 0;
-
-  virtual const bool SetValueFromParameter(const char *parameter) = 0;
+  virtual bool SetValueFromString(const std::string &value) = 0;
 
 //----------------------------------------------------------------------
 // Protected methods

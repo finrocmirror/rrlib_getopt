@@ -43,6 +43,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include <memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -73,6 +74,7 @@ namespace getopt
  */
 class tCounter : public tOptionBase
 {
+  friend unsigned int EvaluateCounter(const std::shared_ptr<const tOptionBase>);
 
 //----------------------------------------------------------------------
 // Public methods
@@ -86,9 +88,7 @@ public:
     return "tCounter";
   }
 
-  virtual const boost::any GetValue() const;
-
-  virtual const bool SetValueFromParameter(const char *parameter);
+  virtual bool SetValueFromString(const std::string &value);
 
 //----------------------------------------------------------------------
 // Private fields and methods
@@ -98,6 +98,8 @@ private:
   unsigned int value;
 
 };
+
+unsigned int EvaluateCounter(const std::shared_ptr<const tOptionBase>);
 
 //----------------------------------------------------------------------
 // End of namespace declaration

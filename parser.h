@@ -77,20 +77,14 @@ typedef bool (*tHandler)(const tNameToOptionMap &name_to_option_map);
 // Function declaration
 //----------------------------------------------------------------------
 
-const tOption AddFlag(const char *long_name, const char short_name, const  char *help, tHandler handler);
+const tOption AddFlag(const char *long_name, const char short_name, const char *help, tHandler handler);
 
-const tOption AddCounter(const char *long_name, const char short_name, const  char *help, tHandler handler);
+const tOption AddCounter(const char *long_name, const char short_name, const char *help, tHandler handler);
 
-const tOption AddValue(const char *long_name, const char short_name, const  char *help, tHandler handler);
+const tOption AddValue(const char *long_name, const char short_name, const char *help, tHandler handler);
 
-void SetProgramVersion(const char *version);
-
-void SetProgramDescription(const char *description);
-
-std::vector<char *> ProcessCommandLine(int argc, char **argv);
-
-std::vector<char *> ProcessCommandLine(int argc, char **argv, const char *program_version, const char *program_description);
-
+std::vector<std::string> ProcessCommandLine(size_t argc, char **argv,
+    const std::string &description = "", const std::string &command_line_arguments = "", const std::string &additional_help_text = "");
 
 
 //----------------------------------------------------------------------

@@ -263,17 +263,17 @@ size_t ProcessOption(const tOptionBase &option, std::string &value, size_t argc,
   if (option.ExpectsValue() && value.empty())
   {
     i++;
-    RRLIB_LOG_PRINT(DEBUG, "   Expecting value which was not seen, yet.");
+    RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "   Expecting value which was not seen, yet.");
     if (i < argc && std::string(argv[i]) != "--")
     {
-      RRLIB_LOG_PRINT(DEBUG, "   Looking at argv[", i, "]: ", argv[i]);
+      RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "   Looking at argv[", i, "]: ", argv[i]);
       value = argv[i];
     }
   }
 
   if (!value.empty())
   {
-    RRLIB_LOG_PRINT(DEBUG, "   Found value: ", value);
+    RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "   Found value: ", value);
   }
 
   if (!const_cast<tOptionBase &>(option).SetValueFromString(value))
@@ -356,7 +356,7 @@ std::vector<std::string> ProcessCommandLine(size_t argc, char **argv,
       name_length = std::min(name_length + 1, strlen(argv[i]));
       std::string value(argv[i] + name_length);
 
-      RRLIB_LOG_PRINT(DEBUG, "Found long option: ", name);
+      RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Found long option: ", name);
 
       if (!IsInMap(LongNameToOptionMap(), name))
       {
@@ -377,7 +377,7 @@ std::vector<std::string> ProcessCommandLine(size_t argc, char **argv,
         char name = argv[i][k + 1];
         std::string value;
 
-        RRLIB_LOG_PRINT(DEBUG, "Found short option: ", name);
+        RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Found short option: ", name);
 
         if (!IsInMap(ShortNameToOptionMap(), name))
         {
@@ -407,12 +407,12 @@ std::vector<std::string> ProcessCommandLine(size_t argc, char **argv,
   {
     if (!it->first(it->second))
     {
-      RRLIB_LOG_PRINT(DEBUG, "Option processing failed!");
+      RRLIB_LOG_PRINT(ERROR, "Option processing failed!");
       exit(EXIT_FAILURE);
     }
   }
 
-  RRLIB_LOG_PRINT(DEBUG, "Remaining command line arguments: ", util::Join(remaining_arguments));
+  RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Remaining command line arguments: ", util::Join(remaining_arguments));
   return remaining_arguments;
 }
 

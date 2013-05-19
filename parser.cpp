@@ -263,15 +263,17 @@ size_t ProcessOption(const tOptionBase &option, std::string &value, size_t argc,
   if (option.ExpectsValue() && value.empty())
   {
     i++;
+    RRLIB_LOG_PRINT(DEBUG, "   Expecting value which was not seen, yet.");
     if (i < argc && std::string(argv[i]) != "--")
     {
+      RRLIB_LOG_PRINT(DEBUG, "   Looking at argv[", i, "]: ", argv[i]);
       value = argv[i];
     }
   }
 
   if (!value.empty())
   {
-    RRLIB_LOG_PRINT(DEBUG, "   with value: ", value);
+    RRLIB_LOG_PRINT(DEBUG, "   Found value: ", value);
   }
 
   if (!const_cast<tOptionBase &>(option).SetValueFromString(value))
@@ -326,7 +328,7 @@ std::vector<std::string> ProcessCommandLine(size_t argc, char **argv,
   std::vector<std::string> remaining_arguments;
   for (size_t i = 1; i < argc; ++i)
   {
-    RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Looking at ", argv[i]);
+    RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Looking at argv[", i, "]: ", argv[i]);
     if (std::string(argv[i]) == "--")
     {
       while (++i < argc)
@@ -369,9 +371,10 @@ std::vector<std::string> ProcessCommandLine(size_t argc, char **argv,
     if (argv[i][0] == '-')
     {
       RRLIB_LOG_PRINT(DEBUG_VERBOSE_1, "Short option processing for '", argv[i] + 1, "'");
-      for (size_t k = 1; k < strlen(argv[i]); ++k)
+      size_t number_of_short_options = strlen(argv[i]) - 1;
+      for (size_t k = 0; k < number_of_short_options; ++k)
       {
-        char name = argv[i][k];
+        char name = argv[i][k + 1];
         std::string value;
 
         RRLIB_LOG_PRINT(DEBUG, "Found short option: ", name);
@@ -383,13 +386,17 @@ std::vector<std::string> ProcessCommandLine(size_t argc, char **argv,
         }
 
         const tOptionBase &option = *ShortNameToOptionMap().at(name);
-        if (option.ExpectsValue() && k < strlen(argv[i] - 1))
-        {
-          RRLIB_LOG_PRINT(ERROR, "Short option '", name, "' cannot be used within option group '", argv[i] + 1, "' because it expects a value!");
-          exit(EXIT_FAILURE);
-        }
-
         i = ProcessOption(option, value, argc, argv, i);
+
+        if (option.ExpectsValue())
+        {
+          if (k < number_of_short_options - 1)
+          {
+            RRLIB_LOG_PRINT(ERROR, "Short option '", name, "' which expects a value can only be used as last element in option group!");
+            exit(EXIT_FAILURE);
+          }
+          break;
+        }
       }
       continue;
     }

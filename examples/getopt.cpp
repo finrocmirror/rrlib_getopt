@@ -19,7 +19,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 //----------------------------------------------------------------------
-/*!\file    rrlib/getopt/test/test_getopt.cpp
+/*!\file    rrlib/getopt/examples/getopt.cpp
  *
  * \author  Tobias Foehst
  *
@@ -32,23 +32,14 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <cstdlib>
-#include <iostream>
-
-extern "C"
-{
 #include <libgen.h>
-}
 
-#include "rrlib/logging/configuration.h"
+#include "rrlib/getopt/parser.h"
+
 #include "rrlib/logging/messages.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
-//----------------------------------------------------------------------
-#include "rrlib/getopt/parser.h"
-
-//----------------------------------------------------------------------
-// Debugging
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
@@ -103,8 +94,6 @@ int main(int argc, char **argv)
 {
   rrlib::logging::default_log_description = basename(argv[0]);
 
-  rrlib::logging::SetDomainMaxMessageLevel(".", rrlib::logging::tLogLevel::DEBUG_VERBOSE_3);
-
   rrlib::getopt::AddValue("port", 'p', "A litte help", &OptionsHandler);
   rrlib::getopt::AddFlag("foo", 'f', "from my friends", &OptionsHandler);
   rrlib::getopt::AddValue(0, 'l', "lalala", &OptionsHandler);
@@ -112,7 +101,7 @@ int main(int argc, char **argv)
   rrlib::getopt::AddCounter(0, 'v', "blubb", &OptionsHandler);
   rrlib::getopt::AddValue("long_option", 0, "Another long option with a\nreally long help text", &OptionsHandler);
 
-  rrlib::getopt::ProcessCommandLine(argc, argv, "This is a test program for the RRLib getopt implementation.", "<files>", "Some text that should be printed, too.");
+  rrlib::getopt::ProcessCommandLine(argc, argv, "This is an example for the RRLib getopt implementation.", "<files>", "Some text that should be printed, too.");
 
   return EXIT_SUCCESS;
 }

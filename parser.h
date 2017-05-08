@@ -81,7 +81,7 @@ const tOption AddFlag(const char *long_name, const char short_name, const char *
 
 const tOption AddCounter(const char *long_name, const char short_name, const char *help, tHandler handler);
 
-const tOption AddValue(const char *long_name, const char short_name, const char *help, tHandler handler);
+const tOption AddValue(const char *long_name, const char short_name, const char *help, tHandler handler, bool restrict_to_single_occurrence = false);
 
 std::vector<std::string> ProcessCommandLine(size_t argc, char **argv,
     const std::string &description = "", const std::string &command_line_arguments = "", const std::string &additional_help_text = "");

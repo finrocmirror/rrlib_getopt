@@ -307,9 +307,9 @@ const tOption AddCounter(const char *long_name, const char short_name, const  ch
 //----------------------------------------------------------------------
 // AddValue
 //----------------------------------------------------------------------
-const tOption AddValue(const char *long_name, const char short_name, const  char *help, tHandler handler)
+const tOption AddValue(const char *long_name, const char short_name, const  char *help, tHandler handler, bool restrict_to_single_occurrence)
 {
-  return AddOption(tOption(new tValue(long_name, short_name, help)), handler);
+  return AddOption(tOption(new tValue(long_name, short_name, help, restrict_to_single_occurrence)), handler);
 }
 
 //----------------------------------------------------------------------

@@ -71,8 +71,9 @@ namespace getopt
 //----------------------------------------------------------------------
 // tValue constructors
 //----------------------------------------------------------------------
-tValue::tValue(const char *long_name, const char short_name, const char *help)
-  : tOptionBase(long_name, short_name, help)
+tValue::tValue(const char *long_name, const char short_name, const char *help, bool restrict_to_single_occurrence)
+  : tOptionBase(long_name, short_name, help),
+    restrict_to_single_occurrence(restrict_to_single_occurrence)
 {}
 
 //----------------------------------------------------------------------
@@ -88,9 +89,9 @@ bool tValue::ExpectsValue() const
 //----------------------------------------------------------------------
 bool tValue::SetValueFromString(const std::string &value)
 {
-  if (this->IsActive())
+  if (this->IsActive() && this->restrict_to_single_occurrence)
   {
-    RRLIB_LOG_PRINT(ERROR, "Double occurrence of option '", this->GetName(), "'!");
+    RRLIB_LOG_PRINT(ERROR, "Multiple occurrence of option '", this->GetName(), "'!");
     return false;
   }
   if (value.empty())
@@ -98,7 +99,7 @@ bool tValue::SetValueFromString(const std::string &value)
     RRLIB_LOG_PRINT(ERROR, "Missing value for option '", this->GetName(), "'!");
     return false;
   }
-  this->value = value;
+  this->values.emplace_back(value);
   return tOptionBase::SetValueFromString(value);
 }
 
@@ -112,7 +113,26 @@ const std::string &EvaluateValue(const std::shared_ptr<const tOptionBase> option
   {
     throw std::logic_error("Trying to treat an option as value which was not created as such!");
   }
-  return value->value;
+  assert(!value->values.empty());
+  if (value->values.size() > 1)
+  {
+    RRLIB_LOG_PRINT(WARNING, "Evaluating only first value of a list of values (multiple occurrence of option ", option->GetName(), ")");
+  }
+  return value->values.front();
+}
+
+//----------------------------------------------------------------------
+// EvaluateValueList
+//----------------------------------------------------------------------
+const std::vector<std::string> &EvaluateValueList(const std::shared_ptr<const tOptionBase> option)
+{
+  const tValue *value = dynamic_cast<const tValue *>(option.get());
+  if (!value)
+  {
+    throw std::logic_error("Trying to treat an option as value which was not created as such!");
+  }
+  assert(!value->values.empty());
+  return value->values;
 }
 
 //----------------------------------------------------------------------

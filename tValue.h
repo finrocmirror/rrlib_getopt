@@ -75,13 +75,14 @@ namespace getopt
 class tValue : public tOptionBase
 {
   friend const std::string &EvaluateValue(const std::shared_ptr<const tOptionBase> option);
+  friend const std::vector<std::string> &EvaluateValueList(const std::shared_ptr<const tOptionBase> option);
 
 //----------------------------------------------------------------------
 // Public methods
 //----------------------------------------------------------------------
 public:
 
-  tValue(const char *long_name, const char short_name, const char *help);
+  tValue(const char *long_name, const char short_name, const char *help, bool restrict_to_single_occurrence = false);
 
   virtual inline const char *GetDescription() const
   {
@@ -97,11 +98,14 @@ public:
 //----------------------------------------------------------------------
 private:
 
-  std::string value;
+  bool restrict_to_single_occurrence;
+  std::vector<std::string> values;
 
 };
 
 const std::string &EvaluateValue(const std::shared_ptr<const tOptionBase> option);
+
+const std::vector<std::string> &EvaluateValueList(const std::shared_ptr<const tOptionBase> option);
 
 //----------------------------------------------------------------------
 // End of namespace declaration

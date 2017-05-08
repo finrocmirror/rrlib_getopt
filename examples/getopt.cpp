@@ -62,8 +62,10 @@ bool OptionsHandler(const rrlib::getopt::tNameToOptionMap &name_to_option_map)
 {
   if (name_to_option_map.at("port")->IsActive())
   {
-    int port = atoi(rrlib::getopt::EvaluateValue(name_to_option_map.at("port")).c_str());
-    RRLIB_LOG_PRINT(USER, "Port was set to ", port);
+    for (const auto & port : rrlib::getopt::EvaluateValueList(name_to_option_map.at("port")))
+    {
+      RRLIB_LOG_PRINT(USER, "Port was set to ", atoi(port.c_str()));
+    }
   }
 
   if (name_to_option_map.at("foo")->IsActive())
